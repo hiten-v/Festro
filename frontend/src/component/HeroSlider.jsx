@@ -4,16 +4,34 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function HeroSlider() {
   const slides = [
     {
-      type: "video",
-      src: "/videos/event1.mp4",
+      // type: "image",
+      src: "https://picsum.photos/2000/1200?random=18",
+      text: "Party Like There's No Tomorrow",
     },
     {
-      type: "image",
+      // type: "image",
+      src: "https://picsum.photos/2000/1200?random=19",
+      text: "Celebrate in Style",
+    },
+    {
+      // type: "image",
       src: "https://picsum.photos/2000/1200?random=20",
+      text: "Your Event, Our Expertise",
     },
     {
-      type: "image",
+      // type: "image",
       src: "https://picsum.photos/2000/1200?random=21",
+      text: "Making Moments Magical",
+    },
+    {
+      // type: "image",
+      src: "https://picsum.photos/2000/1200?random=24",
+      text: "Where Events Come Alive",
+    },
+    {
+      // type: "image",
+      src: "https://picsum.photos/2000/1200?random=26",
+      text: "Creating Unforgettable Experiences",
     },
   ];
 
@@ -38,7 +56,7 @@ export default function HeroSlider() {
           transition={{ duration: 1.2 }}
           className="absolute inset-0"
         >
-          {slides[index].type === "video" ? (
+          {/* {slides[index].type === "video" ? (
             <video
               src={slides[index].src}
               autoPlay
@@ -46,12 +64,12 @@ export default function HeroSlider() {
               loop
               className="w-full h-full object-cover"
             />
-          ) : (
+          ) : ( */}
             <img
               src={slides[index].src}
               className="w-full h-full object-cover"
             />
-          )}
+          {/* )} */}
 
           {/* Overlay text */}
           <div className="absolute inset-0 flex flex-col items-center justify-center text-white bg-black/30">
@@ -61,17 +79,17 @@ export default function HeroSlider() {
               transition={{ duration: 0.8 }}
               className="text-5xl md:text-7xl font-bold drop-shadow-xl"
             >
-              Your Perfect Event Happens Here
+              {slides[index].text}
             </motion.h1>
 
-            <motion.p
+            {/* <motion.p
               initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 1 }}
               className="mt-4 text-xl md:text-2xl opacity-90"
             >
               Seamless · Premium · Memorable
-            </motion.p>
+            </motion.p> */}
           </div>
         </motion.div>
       </AnimatePresence>

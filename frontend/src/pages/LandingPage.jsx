@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import HeroSlider from "./HeroSlider";
+import HeroSlider from "../component/HeroSlider";
 
 export default function LandingPage() {
   return (
@@ -7,11 +7,11 @@ export default function LandingPage() {
 
 
     <div className="overflow-x-hidden font-sans bg-white text-gray-900">
-
+      
       <HeroSlider />
 
       {/* HERO SECTION */}
-      <section className="h-screen flex flex-col justify-center items-center text-center px-6 bg-linear-to-br from-purple-500 to-indigo-600 text-white relative">
+      <section className="h-screen flex flex-col justify-center items-center text-center px-6 bg-linear-to-br from-gray-500 to-yellow-600 text-white relative">
         <motion.h1
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -116,7 +116,7 @@ export default function LandingPage() {
 
 
       {/* STATS SECTION */}
-      <section className="py-20 bg-gradient-to-r from-indigo-600 to-purple-500 text-white text-center">
+      <section className="py-20 bg-linear-to-r from-emerald-800 to-slate-500 text-white text-center">
         <h2 className="text-4xl font-bold mb-12">Our Impact</h2>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
