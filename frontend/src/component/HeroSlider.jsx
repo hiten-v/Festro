@@ -73,15 +73,17 @@ export default function HeroSlider() {
 
           {/* Overlay text */}
           <div className="absolute inset-0 flex flex-col items-center justify-center text-white bg-black/30">
-            <motion.h1
+            <motion.h2
               initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.8 }}
-              className="text-5xl md:text-7xl font-bold drop-shadow-xl"
+              className="text-5xl max-md:text-4xl text-center m-3 font-bold drop-shadow-xl"
             >
               {slides[index].text}
-            </motion.h1>
-
+            </motion.h2>
+             <button className="bg-slate-600/50 text-white px-8 py-2.5 m-7 rounded-full transition-all duration-500 hover:">
+                Get Started
+              </button>
             {/* <motion.p
               initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}

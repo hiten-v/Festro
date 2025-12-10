@@ -1,0 +1,5 @@
+username: hitenvaid3837_db_user
+pass: WOQOL7oRjeQKhuGb
+
+
+connection string: mongodb+srv://hitenvaid3837_db_user:WOQOL7oRjeQKhuGb@festro.at35kyz.mongodb.net/?appName=Festro
