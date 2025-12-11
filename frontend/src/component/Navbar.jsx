@@ -22,7 +22,6 @@ export default function Navbar () {
     }, []);
 
 
-
     const navigate = useNavigate();
 
     const handleDashboardClick = () => {
@@ -96,7 +95,7 @@ export default function Navbar () {
             </div>
 
             {/* Mobile Menu */}
-            <div className={`fixed top-0 left-0 w-full h-screen bg-slate-500/96 
+            <div className={`fixed top-0 left-0 w-full h-screen bg-slate-400/96 
                 text-base flex flex-col md:hidden items-center justify-center gap-6 
                 font-medium text-white transition-all duration-500 ${isMenuOpen ? "translate-x-0" : "-translate-x-full"}`}>
                 <button className="absolute top-6 right-4" onClick={() => setIsMenuOpen(false)}>
