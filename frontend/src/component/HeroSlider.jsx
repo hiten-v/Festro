@@ -50,9 +50,9 @@ export default function HeroSlider() {
                 {slides[index].text}
               </motion.h2>
 
-              <button className="bg-slate-600/50 text-white px-8 py-2.5 m-7 rounded-full transition-all duration-500 hover:bg-slate-600/70">
+              <a href="/events" className="bg-slate-800/50 text-white px-8 py-2.5 m-7 rounded-full transition-all duration-200 hover:bg-slate-600">
                 Get Started
-              </button>
+              </a>
             </div>
           </motion.div>
         </AnimatePresence>

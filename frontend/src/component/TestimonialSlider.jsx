@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Star } from "lucide-react";
-
 export default function TestimonialSlider() {
   const testimonials = [
     {
@@ -82,9 +81,14 @@ export default function TestimonialSlider() {
   );
 
   return (
-    <section className="py-20 px-6">
+    <section className="py-20 px-6 bg-gray-200">
       <h2 className="text-4xl font-bold text-center mb-12">What Clients Say</h2>
 
+      <motion.div
+              initial={{ opacity: 0, y: 80 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7 , ease: "easeOut" }}
+            >
       <div className="relative max-w-6xl mx-auto">
 
         {/* LEFT ARROW */}
@@ -153,6 +157,8 @@ export default function TestimonialSlider() {
           </AnimatePresence>
         </div>
       </div>
+      </motion.div>
     </section>
+
   );
 }
