@@ -79,7 +79,7 @@ export default function LandingPage() {
               <div
                 className="absolute inset-0 bg-[#8b3a3a]/98
                           flex items-center justify-center text-center
-                          px-6 opacity-0 group-hover:opacity-100
+                          px-6 opacity-0 group-hover:opacity-100 focus:opacity-100
                           transition-opacity duration-300"
               >
                 <p className="text-amber-50 text-sm leading-relaxed">
@@ -110,6 +110,7 @@ export default function LandingPage() {
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7 }}
+              className="hover:scale-120 transition ease-in duration-300"
             >
               <h3 className="text-4xl font-extrabold">{num}</h3>
               <p className="mt-2">{title}</p>
@@ -142,27 +143,7 @@ export default function LandingPage() {
 
       <Newsletter />
 
-      {/* FOOTER */}
-      {/* <footer className="py-10 text-center bg-gray-400 text-white text-sm"> */}
-      <footer className="flex flex-col md:flex-row gap-3 items-center justify-around w-full py-4 text-sm bg-slate-800 text-white/70">
-        <p>
-            © {new Date().getFullYear()} Festro. All rights reserved.
-        </p>
 
-            <div className="flex items-center gap-4">
-                <a href="#" className="hover:text-white transition-all">
-                    Contact Us
-                </a>
-                <div className="h-8 w-px bg-white/20"></div>
-                <a href="#" className="hover:text-white transition-all">
-                    Privacy Policy
-                </a>
-                <div className="h-8 w-px bg-white/20"></div>
-                <a href="#" className="hover:text-white transition-all">
-                    Trademark Policy
-                </a>
-            </div>
-        </footer>
 
     </div>
   );

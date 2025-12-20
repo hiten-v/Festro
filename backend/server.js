@@ -1,21 +1,37 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
 require('dotenv').config();
-
+const path = require('path'); 
 const app = express();
 
+// CORS - MUST BE FIRST!
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+}));
+
 // Middleware
-app.use(cors());
-
 app.use(express.json());
+app.use(cookieParser());
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: "Something went wrong" });
-});
-
-app.use("/api/newsletter", require("./routes/newsletter"));
+// Session middleware
+app.use(session({
+  secret: process.env.JWT_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    sameSite: 'lax'
+  },
+  name: 'festro.sid'
+}));
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/event-management', {
@@ -25,10 +41,55 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/event-man
 .then(() => console.log('MongoDB connected'))
 .catch(err => console.log('MongoDB connection error:', err));
 
-// Routes
+// Import routes
 const authRoutes = require('./routes/auth');
-app.use('/api/auth', authRoutes);
+const usersRouter = require('./routes/users');
+const bookingsRouter = require('./routes/bookings');
+const ratingsRouter = require('./routes/ratings');
+const eventRoutes = require('./routes/events'); // ADD THIS
+const dashboardRoutes = require('./routes/dashboard');
+const experiencesRoutes = require('./routes/experiences');
 
+// In server.js, after other routes
+const reportRoutes = require('./routes/report');
+app.use('/api/report', reportRoutes);
+
+
+app.use('/uploads', express.static(path.join(__dirname, '../frontend/public/uploads')));
+app.use('/experiences', express.static(path.join(__dirname, '../frontend/public/experiences'))); 
+
+
+// Use routes
+app.use('/api/auth', authRoutes);
+app.use('/api/users', usersRouter);
+app.use('/api/bookings', bookingsRouter);
+app.use('/api/ratings', ratingsRouter);
+app.use('/api/events', eventRoutes); 
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/experiences', experiencesRoutes);
+app.use("/api/newsletter", require("./routes/newsletter"));
+
+
+app.get('/', (req, res) => {
+  res.json({ 
+    message: 'Event Management API Running',
+    session: req.sessionID ? 'Active' : 'None'
+  });
+});
+
+// Clear session (logout test)
+app.get('/api/auth/logout', (req, res) => {
+  req.session.destroy();
+  res.clearCookie('festro.sid');
+  res.json({ message: 'Logged out successfully' });
+});
+
+
+// Error handling
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ message: "Something went wrong" });
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

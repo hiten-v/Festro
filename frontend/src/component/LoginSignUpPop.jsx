@@ -95,35 +95,56 @@ const LoginSignupPopup = ({ isOpen, onClose, onLoginSuccess }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(formData),
+        credentials: 'include' // IMPORTANT: Send cookies
       });
 
       const data = await response.json();
       
-      if (response.ok) {
-        // Store user info in localStorage
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        localStorage.setItem('role', data.user.role);
-        localStorage.setItem('isLoggedIn', 'true');
+  //     if (response.ok) {
+  //       // Store user info in localStorage
+  //       localStorage.setItem('token', data.token);
+  //       localStorage.setItem('user', JSON.stringify(data.user));
+  //       localStorage.setItem('role', data.user.role);
+  //       localStorage.setItem('isLoggedIn', 'true');
         
-        onLoginSuccess();
-        onClose();
-        showToast(
-          isLogin ? "Login successful!" : "Account created successfully!",
-          "success"
-        );
-        // alert(isLogin ? 'Login successful!' : 'Account created successfully!');
-      } else {
-        showToast(data.message || "Something went wrong", "error");
-        // alert(data.message || 'Something went wrong');
+  //       onLoginSuccess();
+  //       onClose();
+  //       showToast(
+  //         isLogin ? "Login successful!" : "Account created successfully!",
+  //         "success"
+  //       );
+  //       // alert(isLogin ? 'Login successful!' : 'Account created successfully!');
+  //     } else {
+  //       showToast(data.message || "Something went wrong", "error");
+  //       // alert(data.message || 'Something went wrong');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error:', error);
+  //     // alert('Connection error. Please try again.');
+  //     showToast("Connection error. Please try again.", "error");
+  //   }
+  // };
+          if (response.ok) {
+          // No need to store in localStorage anymore
+          // Session cookie is automatically set by server
+          
+          onLoginSuccess();
+          onClose();
+          showToast(
+            isLogin ? "Login successful!" : "Account created successfully!",
+            "success"
+          );
+          resetForm();
+        } else {
+          showToast(data.message || "Something went wrong", "error");
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        showToast("Connection error. Please try again.", "error");
       }
-    } catch (error) {
-      console.error('Error:', error);
-      // alert('Connection error. Please try again.');
-      showToast("Connection error. Please try again.", "error");
-    }
-  };
+    };
+
 
   const [showForgot, setShowForgot] = useState(false);
 
@@ -178,9 +199,9 @@ const LoginSignupPopup = ({ isOpen, onClose, onLoginSuccess }) => {
           </div>
 
           {/* Toggle between Login/Signup */}
-          <div className="flex mb-8 border-b">
+          <div className="flex mb-8 border-b border-black">
             <button
-              className={`flex-1 py-3 font-medium ${isLogin ? 'text-black border-b-2 border-black' : 'text-gray-400'}`}
+              className={`flex-1 py-3 font-medium ${isLogin ? 'text-gray-400 border-b-2 border-gray-400' : 'text-black'}`}
               onClick={() => {
                 setIsLogin(true);
                 resetForm();
@@ -189,7 +210,7 @@ const LoginSignupPopup = ({ isOpen, onClose, onLoginSuccess }) => {
               Login
             </button>
             <button
-              className={`flex-1 py-3 font-medium ${!isLogin ? 'text-black border-b-2 border-black' : 'text-gray-400'}`}
+              className={`flex-1 py-3 font-medium ${!isLogin ? 'text-gray-400 border-b-2 border-gray-400' : 'text-black'}`}
               onClick={() => {
                 setIsLogin(false);
                 resetForm();

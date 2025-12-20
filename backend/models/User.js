@@ -40,6 +40,15 @@ const userSchema = new mongoose.Schema({
   //   type: Boolean,
   //   default: false
   // },
+  lastLogin: {
+    type: Date
+  },
+  activeSessions: [{
+    sessionId: String,
+    loginAt: Date,
+    userAgent: String,
+    ipAddress: String
+  }],
   createdAt: {
     type: Date,
     default: Date.now

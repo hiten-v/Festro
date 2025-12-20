@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ImagePreloader from "../component/ImagePreloader"; 
-
+import { Link } from "react-router-dom";
 export default function HeroSlider() {
   const slides = [
     { src: "../landingimg/pic1.jpg", text: "Party Like There's No Tomorrow" },
@@ -50,9 +50,9 @@ export default function HeroSlider() {
                 {slides[index].text}
               </motion.h2>
 
-              <a href="/events" className="bg-slate-800/50 text-white px-8 py-2.5 m-7 rounded-full transition-all duration-200 hover:bg-slate-600">
-                Get Started
-              </a>
+              <Link to="/events" className="bg-slate-800/60 text-white px-6 py-2.5 m-7 border border-white rounded-full transition-all duration-200 hover:bg-slate-500 focus:bg-slate-500">
+                <span>Explore Events</span>
+              </Link>
             </div>
           </motion.div>
         </AnimatePresence>
