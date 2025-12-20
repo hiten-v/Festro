@@ -192,7 +192,7 @@ const OrganiserDashboard = () => {
         const errData = await response.json();
         throw new Error(errData.message || 'Failed to create event');
       }
-      showToast("Event created successfully!",success);
+      showToast("Event created successfully!","success");
       setShowCreateModal(false);
       fetchDashboardData();
       setFormData({
@@ -207,7 +207,7 @@ const OrganiserDashboard = () => {
       });
     } catch (error) {
       console.error("Create event error:", error);
-      showToast(error.message || "Failed to create event",error);
+      showToast(error.message || "Failed to create event","error");
     }
   };
 

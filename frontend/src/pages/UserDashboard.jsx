@@ -1,53 +1,3 @@
-// import React, { useState, useEffect } from 'react';
-
-// const UserDash = () => {
-//   const [userData, setUserData] = useState(null);
-//   const [loading, setLoading] = useState(true);
-
-//   useEffect(() => {
-//     const fetchUserData = async () => {
-//       try {
-//         const response = await fetch('http://localhost:5000/api/auth/me', {
-//           credentials: 'include'
-//         });
-//         if (response.ok) {
-//           const data = await response.json();
-//           setUserData(data.user);
-//         }
-//       } catch (error) {
-//         console.error('Error fetching user data:', error);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchUserData();
-//   }, []);
-
-//   if (loading) {
-//     return <div>Loading...</div>;
-//   }
-
-//   return (
-//     <div className="p-8">
-//       <h1 className="text-3xl font-bold">User Dashboard</h1>
-//       {userData && (
-//         <div className="mt-4">
-//           <p>Welcome, {userData.name}!</p>
-//           <p>Email: {userData.email}</p>
-//           <p>Role: {userData.role}</p>
-//         </div>
-//       )}
-//       {/* Your user dashboard content */}
-//     </div>
-//   );
-// };
-
-// export default UserDash;
-
-
-
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -78,12 +28,15 @@ const UserDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentSlide, setCurrentSlide] = useState(0);
-  
+  const [favoritesSlide, setFavoritesSlide] = useState(0);
   // Popup states
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showEventPopup, setShowEventPopup] = useState(false);
   const [showRatingPopup, setShowRatingPopup] = useState(false);
   const [selectedPastEvent, setSelectedPastEvent] = useState(null);
+  
+  // Store user reviews for events - key: eventId
+  const [userReviews, setUserReviews] = useState({});
   
   // Report state
   const [showReportForm, setShowReportForm] = useState(false);
@@ -108,6 +61,241 @@ const UserDashboard = () => {
     }, 3000);
   };
 
+  // Helper function to check if event is in the past (considering both date and time)
+  const isEventInPast = (eventDate, eventTime) => {
+    if (!eventDate) return false;
+    
+    const today = new Date();
+    const eventDateTime = new Date(`${eventDate}T${eventTime || '23:59:59'}`);
+    
+    return eventDateTime < today;
+  };
+
+  // Helper function to check if event is upcoming
+  const isEventUpcoming = (eventDate, eventTime) => {
+    if (!eventDate) return true;
+    
+    const today = new Date();
+    const eventDateTime = new Date(`${eventDate}T${eventTime || '00:00:00'}`);
+    
+    return eventDateTime > today;
+  };
+
+  // Function to fetch user reviews and process them
+  const fetchUserReviews = async () => {
+    try {
+      console.log("Fetching user reviews from /api/ratings/my-reviews...");
+      const response = await fetch('http://localhost:5000/api/ratings/my-reviews', {
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        const reviews = await response.json();
+        console.log("Raw reviews data from API:", reviews);
+        
+        // Create a map of reviews by eventId
+        const reviewsMap = {};
+        reviews.forEach(review => {
+          // Extract event ID - handle both object and string
+          let eventId;
+          if (review.event && typeof review.event === 'object') {
+            eventId = review.event._id || review.event;
+          } else {
+            eventId = review.event;
+          }
+          
+          // Extract booking ID - handle both object and string
+          let bookingId;
+          if (review.booking && typeof review.booking === 'object') {
+            bookingId = review.booking._id || review.booking;
+          } else {
+            bookingId = review.booking;
+          }
+          
+          if (eventId) {
+            reviewsMap[eventId] = {
+              rating: review.rating,
+              comment: review.comment,
+              createdAt: review.createdAt,
+              bookingId: bookingId,
+              reviewId: review._id
+            };
+          }
+        });
+        
+        console.log("Processed reviews map:", reviewsMap);
+        setUserReviews(reviewsMap);
+        return reviewsMap;
+      } else {
+        console.error("Failed to fetch reviews:", response.status);
+      }
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    }
+    return {};
+  };
+
+  // Function to check if a specific booking has been reviewed
+  const checkIfBookingReviewed = (reviewsMap, eventId, bookingId) => {
+    if (!reviewsMap[eventId]) return false;
+    
+    // If the review has a bookingId, check if it matches
+    if (reviewsMap[eventId].bookingId) {
+      return reviewsMap[eventId].bookingId === bookingId;
+    }
+    
+    // If no bookingId in review, just check if event has any review
+    return true;
+  };
+
+  // Helper function to extract event ID from booking
+  const getEventIdFromBooking = (booking) => {
+    // Handle both cases: booking.event could be an object or a string
+    if (booking.event && typeof booking.event === 'object') {
+      return booking.event._id || booking.event;
+    }
+    return booking.event || booking._id;
+  };
+
+  // Helper function to extract event info from booking
+  const getEventInfoFromBooking = (booking) => {
+    // If booking has eventInfo, use that
+    if (booking.eventInfo) {
+      return booking.eventInfo;
+    }
+    // If booking.event is an object with event details
+    if (booking.event && typeof booking.event === 'object') {
+      return booking.event;
+    }
+    return {};
+  };
+
+  // Function to refresh all dashboard data
+  const refreshDashboardData = async () => {
+    try {
+      console.log("Refreshing dashboard data...");
+      
+      // First, fetch user reviews
+      const reviewsMap = await fetchUserReviews();
+      console.log("Reviews map after fetch:", reviewsMap);
+      
+      // Refresh upcoming bookings
+      const upcomingRes = await fetch('http://localhost:5000/api/users/upcoming-bookings', {
+        credentials: 'include'
+      });
+      
+      if (upcomingRes.ok) {
+        const upcomingBookings = await upcomingRes.json();
+        
+        // Filter out past events (considering both date and time)
+        const upcomingEvents = upcomingBookings
+          .filter(booking => {
+            const eventInfo = getEventInfoFromBooking(booking);
+            const eventDate = eventInfo.date || booking.date;
+            const eventTime = eventInfo.time || booking.time || '00:00:00';
+            return isEventUpcoming(eventDate, eventTime);
+          })
+          .map(booking => {
+            const eventInfo = getEventInfoFromBooking(booking);
+            return {
+              _id: getEventIdFromBooking(booking),
+              title: eventInfo.title || 'Event',
+              date: eventInfo.date || 'Date',
+              time: eventInfo.time || booking.time || '',
+              location: eventInfo.location || 'Location',
+              description: eventInfo.description || 'Description',
+              image: eventInfo.image || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30',
+              price: eventInfo.price || 0,
+              category: eventInfo.category || 'General',
+              bookingId: booking._id,
+              status: booking.status || 'confirmed',
+              tickets: booking.tickets,
+              totalAmount: booking.totalAmount,
+              ticketNumber: booking.ticketNumber,
+              bookingDate: booking.bookingDate
+            };
+          })
+          .sort((a, b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time));
+        
+        setUpcomingEvents(upcomingEvents);
+      }
+      
+      // Refresh past bookings
+      const bookingsRes = await fetch('http://localhost:5000/api/bookings/my-bookings', {
+        credentials: 'include'
+      });
+      
+      if (bookingsRes.ok) {
+        const bookings = await bookingsRes.json();
+        console.log("All bookings from API:", bookings);
+        
+        const past = bookings
+          .filter(booking => {
+            const eventInfo = getEventInfoFromBooking(booking);
+            const eventDate = eventInfo.date || booking.date;
+            const eventTime = eventInfo.time || booking.time || '23:59:59';
+            return isEventInPast(eventDate, eventTime);
+          })
+          .map(booking => {
+            const eventId = getEventIdFromBooking(booking);
+            const bookingId = booking._id;
+            const eventInfo = getEventInfoFromBooking(booking);
+            
+            // Check if this specific booking has been reviewed
+            const hasReview = checkIfBookingReviewed(reviewsMap, eventId, bookingId);
+            const userReview = reviewsMap[eventId];
+            
+            console.log(`Processing booking - Event: ${eventId}, Booking: ${bookingId}, Has Review: ${hasReview}`);
+            console.log(`Event ID type: ${typeof eventId}, Booking ID: ${bookingId}`);
+            console.log(`Reviews map keys:`, Object.keys(reviewsMap));
+            
+            return {
+              _id: eventId,
+              title: eventInfo.title || 'Event',
+              date: eventInfo.date || 'Date',
+              time: eventInfo.time || booking.time || '',
+              location: eventInfo.location || 'Location',
+              description: eventInfo.description || 'Description',
+              image: eventInfo.image || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30',
+              price: eventInfo.price || 0,
+              category: eventInfo.category || 'General',
+              bookingId: bookingId,
+              bookingDate: booking.bookingDate,
+              tickets: booking.tickets,
+              hasReview,
+              userReview
+            };
+          })
+          .sort((a, b) => new Date(b.date + 'T' + b.time) - new Date(a.date + 'T' + a.time));
+        
+        console.log("Final past bookings with review status:", past);
+        setPastBookings(past);
+      }
+      
+      // Refresh favorites
+      const favRes = await fetch('http://localhost:5000/api/users/favorites', {
+        credentials: 'include'
+      });
+      
+      if (favRes.ok) {
+        const favorites = await favRes.json();
+        const favArray = Array.isArray(favorites) ? favorites : favorites.favorites || [];
+        
+        // Filter out past favorites
+        const upcomingFavorites = favArray.filter(event => {
+          if (!event || !event.date) return false;
+          const eventTime = event.time || '00:00:00';
+          return isEventUpcoming(event.date, eventTime);
+        });
+        
+        setFavoriteEvents(upcomingFavorites);
+      }
+      
+    } catch (error) {
+      console.error("Refresh error:", error);
+      showToast("Error refreshing data", "error");
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -140,182 +328,10 @@ const UserDashboard = () => {
         
         const userData = await userRes.json();
         setUser(userData.user);
+        console.log("Current user:", userData.user);
 
-        // 3. Fetch USER'S UPCOMING BOOKINGS (not all events)
-        // const upcomingRes = await fetch('http://localhost:5000/api/users/upcoming-bookings', {
-        //   credentials: 'include'
-        // });
-        
-        // if (upcomingRes.ok) {
-        //   const upcomingBookings = await upcomingRes.json();
-          
-        //   // Transform booking data to event format for display
-        //   const upcomingEvents = upcomingBookings.map(booking => ({
-        //     _id: booking.event || booking._id,
-        //     title: booking.eventInfo?.title || 'Event',
-        //     date: booking.eventInfo?.date || 'Date',
-        //     time: booking.eventInfo?.time || '',
-        //     location: booking.eventInfo?.location || 'Location',
-        //     description: booking.eventInfo?.description || 'Description',
-        //     image: booking.eventInfo?.image || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30',
-        //     price: booking.eventInfo?.price || 0,
-        //     category: booking.eventInfo?.category || 'General',
-        //     bookingId: booking._id,
-        //     tickets: booking.tickets,
-        //     totalAmount: booking.totalAmount,
-        //     ticketNumber: booking.ticketNumber,
-        //     bookingDate: booking.bookingDate
-        //   })).sort((a, b) => new Date(a.date) - new Date(b.date)); // Sort by date
-        
-        //   setUpcomingEvents(upcomingEvents);
-        // }
-
-        // 3. Fetch USER'S UPCOMING BOOKINGS (not all events)
-        const upcomingRes = await fetch('http://localhost:5000/api/users/upcoming-bookings', {
-          credentials: 'include'
-        });
-
-        if (upcomingRes.ok) {
-          const upcomingBookings = await upcomingRes.json();
-          
-          // Transform booking data to event format for display
-          const upcomingEvents = upcomingBookings.map(booking => ({
-            _id: booking.event || booking._id,
-            title: booking.eventInfo?.title || 'Event',
-            date: booking.eventInfo?.date || 'Date',
-            time: booking.eventInfo?.time || '',
-            location: booking.eventInfo?.location || 'Location',
-            description: booking.eventInfo?.description || 'Description',
-            image: booking.eventInfo?.image || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30',
-            price: booking.eventInfo?.price || 0,
-            category: booking.eventInfo?.category || 'General',
-            bookingId: booking._id, // ✅ This is important
-            status: booking.status || 'confirmed', // ✅ Add status
-            tickets: booking.tickets,
-            totalAmount: booking.totalAmount,
-            ticketNumber: booking.ticketNumber,
-            bookingDate: booking.bookingDate
-          })).sort((a, b) => new Date(a.date) - new Date(b.date));
-          
-          setUpcomingEvents(upcomingEvents);
-        }
-
-        const refreshDashboardData = async () => {
-          try {
-            // Refresh upcoming bookings
-            const upcomingRes = await fetch('http://localhost:5000/api/users/upcoming-bookings', {
-              credentials: 'include'
-            });
-            
-            if (upcomingRes.ok) {
-              const upcomingBookings = await upcomingRes.json();
-              const upcomingEvents = upcomingBookings.map(booking => ({
-                _id: booking.event || booking._id,
-                title: booking.eventInfo?.title || 'Event',
-                date: booking.eventInfo?.date || 'Date',
-                time: booking.eventInfo?.time || '',
-                location: booking.eventInfo?.location || 'Location',
-                description: booking.eventInfo?.description || 'Description',
-                image: booking.eventInfo?.image || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30',
-                price: booking.eventInfo?.price || 0,
-                category: booking.eventInfo?.category || 'General',
-                bookingId: booking._id,
-                status: booking.status || 'confirmed',
-                tickets: booking.tickets,
-                totalAmount: booking.totalAmount,
-                ticketNumber: booking.ticketNumber,
-                bookingDate: booking.bookingDate
-              })).sort((a, b) => new Date(a.date) - new Date(b.date));
-              
-              setUpcomingEvents(upcomingEvents);
-            }
-            
-            // Also refresh past bookings if needed
-            const bookingsRes = await fetch('http://localhost:5000/api/bookings/my-bookings', {
-              credentials: 'include'
-            });
-            
-            if (bookingsRes.ok) {
-              const bookings = await bookingsRes.json();
-              const today = new Date().toISOString().split('T')[0];
-              
-              const past = bookings
-                .filter(booking => {
-                  const eventDate = booking.eventInfo?.date || booking.event?.date;
-                  return eventDate && eventDate < today;
-                })
-                .map(booking => ({
-                  _id: booking.event || booking._id,
-                  title: booking.eventInfo?.title || 'Event',
-                  date: booking.eventInfo?.date || 'Date',
-                  location: booking.eventInfo?.location || 'Location',
-                  description: booking.eventInfo?.description || 'Description',
-                  image: booking.eventInfo?.image || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30',
-                  price: booking.eventInfo?.price || 0,
-                  category: booking.eventInfo?.category || 'General',
-                  bookingId: booking._id,
-                  bookingDate: booking.bookingDate,
-                  tickets: booking.tickets
-                }))
-                .sort((a, b) => new Date(b.date) - new Date(a.date));
-              
-              setPastBookings(past);
-            }
-            
-          } catch (error) {
-            console.error("Refresh error:", error);
-          }
-        };
-
-
-        // 4. Fetch user bookings for history
-        const bookingsRes = await fetch('http://localhost:5000/api/bookings/my-bookings', {
-          credentials: 'include'
-        });
-        
-        if (bookingsRes.ok) {
-          const bookings = await bookingsRes.json();
-          const today = new Date().toISOString().split('T')[0];
-          
-          const past = bookings
-            .filter(booking => {
-              const eventDate = booking.eventInfo?.date || booking.event?.date;
-              return eventDate && eventDate < today;
-            })
-            .map(booking => ({
-              _id: booking.event || booking._id,
-              title: booking.eventInfo?.title || 'Event',
-              date: booking.eventInfo?.date || 'Date',
-              location: booking.eventInfo?.location || 'Location',
-              description: booking.eventInfo?.description || 'Description',
-              image: booking.eventInfo?.image || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30',
-              price: booking.eventInfo?.price || 0,
-              category: booking.eventInfo?.category || 'General',
-              bookingId: booking._id,
-              bookingDate: booking.bookingDate,
-              tickets: booking.tickets
-            }))
-            .sort((a, b) => new Date(b.date) - new Date(a.date));
-          
-          setPastBookings(past);
-        }
-
-        // 5. Fetch favorites
-        const favRes = await fetch('http://localhost:5000/api/users/favorites', {
-          credentials: 'include'
-        });
-        
-        if (favRes.ok) {
-          const favorites = await favRes.json();
-          const today = new Date().toISOString().split('T')[0];
-          
-          const favArray = Array.isArray(favorites) ? favorites : favorites.favorites || [];
-          const upcomingFavorites = favArray.filter(event => 
-            event && event.date && event.date >= today
-          );
-          
-          setFavoriteEvents(upcomingFavorites);
-        }
+        // 3. Fetch all data using refreshDashboardData
+        await refreshDashboardData();
 
       } catch (error) {
         console.error("Dashboard fetch error:", error);
@@ -328,9 +344,6 @@ const UserDashboard = () => {
     fetchData();
   }, [navigate]);
 
-
-
-
   // Handle remove favorite (SESSION auth)
   const handleRemoveFavorite = async (eventId) => {
     try {
@@ -340,20 +353,8 @@ const UserDashboard = () => {
       });
       
       if (response.ok) {
-        // Refresh favorites
-        const favRes = await fetch('http://localhost:5000/api/users/favorites', {
-          credentials: 'include'
-        });
-        
-        if (favRes.ok) {
-          const favorites = await favRes.json();
-          const today = new Date().toISOString().split('T')[0];
-          const favArray = Array.isArray(favorites) ? favorites : favorites.favorites || [];
-          const upcomingFavorites = favArray.filter(event => 
-            event && event.date && event.date >= today
-          );
-          setFavoriteEvents(upcomingFavorites);
-        }
+        // Refresh favorites data
+        await refreshDashboardData();
         showToast("Removed from favorites", "success");
       }
     } catch (error) {
@@ -365,71 +366,29 @@ const UserDashboard = () => {
     navigate(`/book/${eventId}`);
   };
 
-  // const handleEventClick = (event) => {
-  //   setSelectedEvent(event);
-  //   setShowEventPopup(true);
-  // };
-
   const handleEventClick = (event) => {
     setSelectedEvent({
       ...event,
-      status: 'confirmed', // You should get this from your booking data
-      bookingId: event.bookingId // Make sure this is passed
+      status: 'confirmed',
+      bookingId: event.bookingId
     });
     setShowEventPopup(true);
   };
+
   const handlePastEventClick = (event) => {
+    // If user has already reviewed this event, don't open rating popup
+    if (event.hasReview) {
+      showToast("You have already reviewed this event", "info");
+      return;
+    }
     setSelectedPastEvent(event);
     setShowRatingPopup(true);
   };
 
-
-
-  // const handleSubmitRating = async (rating, feedback) => {
-  //   try {
-  //     const response = await fetch(`http://localhost:5000/api/users/events/${selectedPastEvent._id}/review`, {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json'
-  //       },
-  //       credentials: 'include',
-  //       body: JSON.stringify({
-  //         rating,
-  //         comment: feedback
-  //       })
-  //     });
-      
-  //     if (response.ok) {
-  //       showToast("Thank you for your feedback!", "success");
-  //       setShowRatingPopup(false);
-  //       setSelectedPastEvent(null);
-  //     }
-  //   } catch (error) {
-  //     showToast("Failed to submit rating", "error");
-  //   }
-  // };
-
   const handleSubmitRating = async (rating, feedback) => {
-  try {
-    const response = await fetch(`http://localhost:5000/api/users/events/${selectedPastEvent._id}/review`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      credentials: 'include',
-      body: JSON.stringify({
-        rating,
-        comment: feedback
-      })
-    });
-    
-    if (response.ok) {
-      showToast("Thank you for your feedback!", "success");
-      setShowRatingPopup(false);
-      setSelectedPastEvent(null);
-    } else {
-      // Fallback to ratings endpoint
-      const altResponse = await fetch('http://localhost:5000/api/ratings', {
+    try {
+      console.log("Submitting rating for event:", selectedPastEvent._id, "booking:", selectedPastEvent.bookingId);
+      const response = await fetch('http://localhost:5000/api/ratings', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -443,23 +402,27 @@ const UserDashboard = () => {
         })
       });
       
-      if (altResponse.ok) {
+      if (response.ok) {
         showToast("Thank you for your feedback!", "success");
         setShowRatingPopup(false);
+        
+        // Refresh all data to get updated reviews
+        await refreshDashboardData();
+        
         setSelectedPastEvent(null);
       } else {
-        showToast("Failed to submit rating", "error");
+        const errorData = await response.json();
+        showToast(errorData.message || "Failed to submit rating", "error");
       }
+    } catch (error) {
+      console.error("Rating submission error:", error);
+      showToast("Failed to submit rating", "error");
     }
-  } catch (error) {
-    showToast("Failed to submit rating", "error");
-  }
-};
+  };
 
   const handleSubmitReport = async (e) => {
     e.preventDefault();
     try {
-      // We need an event ID for reporting
       if (!selectedPastEvent && !selectedEvent) {
         showToast("Please select an event to report", "error");
         return;
@@ -494,6 +457,23 @@ const UserDashboard = () => {
     }
   };
 
+  // Function to render star rating
+  const renderStarRating = (rating) => {
+    return (
+      <div className="flex items-center gap-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <FaStar
+            key={star}
+            className={`text-sm ${
+              star <= rating ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'
+            }`}
+          />
+        ))}
+        <span className="text-xs text-gray-600 ml-1">({rating}/5)</span>
+      </div>
+    );
+  };
+
   const quickActions = [
     { icon: <FaCalendarAlt />, label: "Browse Events", action: () => navigate('/events') },
     { icon: <FaHeart />, label: "My Favorites", action: () => document.getElementById('favorites').scrollIntoView({ behavior: 'smooth' }) },
@@ -501,9 +481,8 @@ const UserDashboard = () => {
     { icon: <FaBell />, label: "Notifications", action: () => showToast("No new notifications", "info") },
   ];
 
-
   const nextSlide = () => {
-    const slideIncrement = 3; // Move 3 events at a time
+    const slideIncrement = 3;
     setCurrentSlide((prev) => {
       const maxSlide = Math.max(0, filteredUpcomingEvents.length - slideIncrement);
       return prev + slideIncrement > maxSlide ? 0 : prev + slideIncrement;
@@ -511,12 +490,13 @@ const UserDashboard = () => {
   };
 
   const prevSlide = () => {
-    const slideIncrement = 3; // Move 3 events at a time
+    const slideIncrement = 3;
     setCurrentSlide((prev) => {
       const maxSlide = Math.max(0, filteredUpcomingEvents.length - slideIncrement);
       return prev - slideIncrement < 0 ? maxSlide : prev - slideIncrement;
     });
   };
+
   // Filter events based on search
   const filteredUpcomingEvents = upcomingEvents.filter(event =>
     event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -643,10 +623,9 @@ const UserDashboard = () => {
           <div className="relative overflow-hidden rounded-2xl">
             <motion.div
               className="flex"
-              animate={{ x: `-${currentSlide * 33.333}%` }} // 33.333% per slide (3 events)
+              animate={{ x: `-${currentSlide * 33.333}%` }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
-              {/* Group events in sets of 3 */}
               {(() => {
                 const groups = [];
                 for (let i = 0; i < filteredUpcomingEvents.length; i += 3) {
@@ -693,6 +672,10 @@ const UserDashboard = () => {
                               <span className="font-medium text-slate-700">{event.date}</span>
                             </div>
                             <div className="flex justify-between text-xs">
+                              <span className="text-stone-500">Time:</span>
+                              <span className="font-medium text-slate-700">{event.time || 'N/A'}</span>
+                            </div>
+                            <div className="flex justify-between text-xs">
                               <span className="text-stone-500">Tickets:</span>
                               <span className="font-medium text-slate-700">{event.tickets || 1}</span>
                             </div>
@@ -713,7 +696,6 @@ const UserDashboard = () => {
               ))}
             </motion.div>
             
-            {/* Dots indicator for groups */}
             {(() => {
               const totalGroups = Math.ceil(filteredUpcomingEvents.length / 3);
               if (totalGroups > 1) {
@@ -749,72 +731,158 @@ const UserDashboard = () => {
         )}
       </div>
 
-      {/* Favorite Events */}
+      {/* Favorite Events Slider */}
       {!loading && favoriteEvents.length > 0 && (
         <div id="favorites" className="max-w-7xl mx-auto mb-12 max-md:m-10 max-2xl:m-5">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
               <FaHeart className="text-red-500" />
               Your Favorite Events
+              <span className="text-sm font-normal text-stone-500 ml-2">
+                ({favoriteEvents.length} favorited)
+              </span>
             </h2>
-            {favoriteEvents.length > 2 && (
-              <button 
-                onClick={() => navigate('/favorites')}
-                className="text-sm text-[#702c2c] font-medium hover:underline flex items-center gap-1"
-              >
-                View All <FaArrowRight className="text-xs" />
-              </button>
+            {favoriteEvents.length > 3 && (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-stone-500">
+                  Slide {Math.floor(favoritesSlide / 3) + 1} / {Math.ceil(favoriteEvents.length / 3)}
+                </span>
+                <button 
+                  onClick={() => {
+                    const newSlide = favoritesSlide - 3;
+                    setFavoritesSlide(newSlide < 0 ? 0 : newSlide);
+                  }}
+                  disabled={favoritesSlide === 0}
+                  className={`p-2 rounded-full border border-stone-200 ${
+                    favoritesSlide === 0 
+                      ? 'bg-stone-100 text-stone-300 cursor-not-allowed' 
+                      : 'bg-white hover:bg-stone-50 text-stone-700'
+                  }`}
+                >
+                  <FaChevronLeft className="text-sm" />
+                </button>
+                <button 
+                  onClick={() => {
+                    const maxSlide = Math.max(0, Math.ceil(favoriteEvents.length / 3) - 1) * 3;
+                    const newSlide = favoritesSlide + 3;
+                    setFavoritesSlide(newSlide > maxSlide ? maxSlide : newSlide);
+                  }}
+                  disabled={favoritesSlide + 3 >= favoriteEvents.length}
+                  className={`p-2 rounded-full border border-stone-200 ${
+                    favoritesSlide + 3 >= favoriteEvents.length
+                      ? 'bg-stone-100 text-stone-300 cursor-not-allowed' 
+                      : 'bg-white hover:bg-stone-50 text-stone-700'
+                  }`}
+                >
+                  <FaChevronRight className="text-sm" />
+                </button>
+              </div>
             )}
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-md:m-10 max-2xl:m-5">
-            {favoriteEvents.slice(0, 2).map((event) => (
+          <div className="relative overflow-hidden rounded-2xl">
+            <>
               <motion.div
-                key={event._id}
-                whileHover={{ scale: 1.01 }}
-                onClick={() => handleBookEvent(event._id)}
-                className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm 
-                  hover:shadow-md transition-all cursor-pointer flex"
+                className="flex"
+                animate={{ x: `-${favoritesSlide * 33.333}%` }}
+                transition={{ type: "spring", stiffness: 300, damping: 30 }}
               >
-                <div className="w-1/3 relative">
-                  <img
-                    src={event.image}
-                    alt={event.title}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.target.src = "https://images.unsplash.com/photo-1492684223066-81342ee5ff30";
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-linear-to-r from-transparent to-white/30"></div>
-                </div>
-                
-                <div className="w-2/3 p-4">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-bold text-slate-800 line-clamp-1">{event.title}</h3>
-                    <FaHeart className="text-red-500" />
+                {(() => {
+                  const groups = [];
+                  for (let i = 0; i < favoriteEvents.length; i += 3) {
+                    groups.push(favoriteEvents.slice(i, i + 3));
+                  }
+                  return groups;
+                })().map((group, groupIndex) => (
+                  <div key={groupIndex} className="w-full shrink-0 px-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      {group.map((event) => (
+                        <motion.div
+                          key={event._id}
+                          whileHover={{ y: -4 }}
+                          onClick={() => handleBookEvent(event._id)}
+                          className="bg-white rounded-xl border border-stone-200 overflow-hidden shadow-sm hover:shadow-md transition-all cursor-pointer"
+                        >
+                          <div className="relative h-44 overflow-hidden bg-stone-100">
+                            <img
+                              src={event.image}
+                              alt={event.title}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.target.src = "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&q=80&w=1000";
+                              }}
+                            />
+                            <span className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
+                              {event.category}
+                            </span>
+                          </div>
+                          
+                          <div className="p-4">
+                            <h3 className="font-bold text-slate-800 mb-2 line-clamp-1">{event.title}</h3>
+                            <p className="text-stone-500 text-sm mb-3 flex items-center gap-1">
+                              <FaMapMarkerAlt className="text-xs" /> {event.location}
+                            </p>
+                            <p className="text-stone-500 text-sm mb-4 line-clamp-2">{event.description}</p>
+                            
+                            <div className="space-y-2 border-t border-stone-100 pt-3">
+                              <div className="flex justify-between text-xs">
+                                <span className="text-stone-500">Date:</span>
+                                <span className="font-medium text-slate-700">{event.date}</span>
+                              </div>
+                              <div className="flex justify-between text-xs">
+                                <span className="text-stone-500">Time:</span>
+                                <span className="font-medium text-slate-700">{event.time || 'N/A'}</span>
+                              </div>
+                              <div className="flex justify-between text-xs">
+                                <span className="text-stone-500">Price:</span>
+                                <span className="font-medium text-slate-700">
+                                  {event.price === 0 ? 'Free' : `₹${event.price}`}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="flex gap-2 mt-4">
+                              <button className="flex-1 bg-[#702c2c] text-white py-2.5 text-sm font-medium rounded-lg hover:bg-[#5a2323] transition-colors">
+                                Book Now
+                              </button>
+                              <button 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleRemoveFavorite(event._id);
+                                }}
+                                className="px-4 py-2.5 border border-stone-300 text-stone-600 text-sm font-medium rounded-lg hover:bg-stone-50 transition-colors"
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex items-center text-stone-600 text-sm mb-3 gap-2">
-                    <FaCalendarAlt className="text-xs" />
-                    <span>{event.date}</span>
-                  </div>
-                  <p className="text-stone-600 text-sm mb-4 line-clamp-2">{event.description}</p>
-                  <div className="flex gap-2">
-                    <button className="flex-1 bg-[#702c2c] text-white py-2 rounded-lg font-medium hover:bg-[#5a2323]">
-                      Book Now
-                    </button>
-                    <button 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemoveFavorite(event._id);
-                      }}
-                      className="px-3 py-2 border border-stone-300 text-stone-600 rounded-lg hover:bg-stone-50"
-                    >
-                      Remove
-                    </button>
-                  </div>
-                </div>
+                ))}
               </motion.div>
-            ))}
+              
+              {(() => {
+                const totalGroups = Math.ceil(favoriteEvents.length / 3);
+                if (totalGroups > 1) {
+                  return (
+                    <div className="flex justify-center gap-2 mt-6">
+                      {Array.from({ length: totalGroups }).map((_, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setFavoritesSlide(idx * 3)}
+                          className={`w-2 h-2 rounded-full transition-all ${
+                            Math.floor(favoritesSlide / 3) === idx ? 'bg-red-500 w-6' : 'bg-stone-300'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  );
+                }
+                return null;
+              })()}
+            </>
           </div>
         </div>
       )}
@@ -848,9 +916,8 @@ const UserDashboard = () => {
             <div className="divide-y divide-stone-100">
               {pastBookings.slice(0, 5).map((event) => (
                 <div
-                  key={event.bookingId || event._id}
-                  className="p-4 hover:bg-stone-50 transition-colors cursor-pointer flex items-center justify-between"
-                  onClick={() => handlePastEventClick(event)}
+                  key={`${event.bookingId || event._id}-${event.hasReview ? 'rated' : 'not-rated'}`}
+                  className="p-4 hover:bg-stone-50 transition-colors flex items-center justify-between"
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 bg-stone-100 rounded-lg flex items-center justify-center">
@@ -859,15 +926,32 @@ const UserDashboard = () => {
                     <div>
                       <h4 className="font-medium text-slate-800">{event.title}</h4>
                       <div className="flex items-center text-stone-500 text-sm gap-3 mt-1">
-                        <span>{event.date}</span>
+                        <span>{event.date} {event.time && `• ${event.time}`}</span>
                         <span>•</span>
                         <span>{event.location}</span>
                       </div>
+                      {event.hasReview && event.userReview && (
+                        <div className="mt-2 flex items-center gap-2">
+                          <span className="text-xs text-gray-600">Your rating:</span>
+                          {renderStarRating(event.userReview.rating)}
+                        </div>
+                      )}
                     </div>
                   </div>
-                  <button className="text-sm text-[#702c2c] font-medium hover:underline flex items-center gap-1">
-                    Rate & Review <FaStar className="text-xs" />
-                  </button>
+                  
+                  {event.hasReview ? (
+                    <div className="text-sm text-green-600 font-medium flex items-center gap-1">
+                      <FaStar className="text-yellow-500" />
+                      Rated
+                    </div>
+                  ) : (
+                    <button 
+                      onClick={() => handlePastEventClick(event)}
+                      className="text-sm text-[#702c2c] font-medium hover:underline flex items-center gap-1"
+                    >
+                      Rate & Review <FaStar className="text-xs" />
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
@@ -998,14 +1082,6 @@ const UserDashboard = () => {
       </div>
 
       {/* Popups */}
-      {/* <EventPopup 
-        show={showEventPopup}
-        event={selectedEvent}
-        onClose={() => setShowEventPopup(false)}
-        onEmailTicket={handleEmailTicket}
-        onDownloadTicket={handleDownloadTicket}
-      /> */}
-
       <EventPopup 
         show={showEventPopup}
         event={selectedEvent}
@@ -1014,11 +1090,10 @@ const UserDashboard = () => {
           setShowEventPopup(false);
           setSelectedEvent(null);
         }}
-        onCancelSuccess={()=>{
-          refreshDashboardData
+        onCancelSuccess={async () => {
+          await refreshDashboardData();
           showToast("Booking cancelled successfully!", "success");
-        }
-        }
+        }}
       />
 
       <RatingPopup 

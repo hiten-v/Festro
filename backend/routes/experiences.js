@@ -37,13 +37,11 @@ router.get('/', async (req, res) => {
 // POST new experience
 router.post('/', upload.single('image'), async (req, res) => {
     try {
-        const { userName, eventName, eventDate, eventTime, description } = req.body;
+        const { userName, eventName, description } = req.body;
 
         const newExperience = new Experience({
             userName,
             eventName,
-            eventDate,
-            eventTime,
             description,
             image: req.file ? `/experiences/${req.file.filename}` : ''
         });

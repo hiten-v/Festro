@@ -54,7 +54,12 @@ router.get('/stats', requireOrganizerAuth, async (req, res) => {
     }
 
     // Fetch all bookings for organizer's events
-    const allBookings = await Booking.find({ event: { $in: eventIds } }).populate('event');
+    // const allBookings = await Booking.find({ event: { $in: eventIds } }).populate('event');
+    const allBookings = await Booking.find({ 
+      event: { $in: eventIds },
+      status: { $ne: 'cancelled' } // EXCLUDE CANCELLED BOOKINGS
+    }).populate('event');
+
 
     let totalRevenue = 0;
     let totalTicketsSold = 0;
@@ -104,7 +109,16 @@ router.get('/stats', requireOrganizerAuth, async (req, res) => {
     });
 
     // Recent Sales
-    const recentSales = await Booking.find({ event: { $in: eventIds } })
+    // const recentSales = await Booking.find({ event: { $in: eventIds } })
+    //   .sort({ bookingDate: -1 })
+    //   .limit(5)
+    //   .populate('user', 'name email')
+    //   .populate('event', 'title');
+
+    const recentSales = await Booking.find({ 
+      event: { $in: eventIds },
+      status: { $ne: 'cancelled' } // EXCLUDE CANCELLED FROM RECENT SALES TOO
+    })
       .sort({ bookingDate: -1 })
       .limit(5)
       .populate('user', 'name email')

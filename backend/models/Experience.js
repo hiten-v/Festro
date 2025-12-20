@@ -13,11 +13,13 @@ const experienceSchema = new mongoose.Schema({
     },
     eventDate: {
         type: String,
-        required: true
+        required: true,
+        default: () => new Date().toISOString().split('T')[0]
     },
     eventTime: {
         type: String,
-        required: true
+        required: true,
+        default: () => new Date().toTimeString().split(' ')[0] 
     },
     description: {
         type: String,

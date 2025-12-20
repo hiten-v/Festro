@@ -437,9 +437,7 @@ router.post('/', requireAuth, async (req, res) => {
     const finalPaymentId = paymentId || (isFreeEvent ? `FREE_${Date.now()}` : `MOCK_${Date.now()}`);
     
     // Set status: auto-confirm free events, pending for paid events
-    const status = isFreeEvent ? 'confirmed' : 'pending';
-    console.log('Booking status:', status);
-
+    const status = 'confirmed';
     // Create booking
     const booking = new Booking({
       user: userId,
