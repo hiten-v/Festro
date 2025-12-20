@@ -16,7 +16,7 @@ const Footer = ()=> {
                 Events
             </button>
             <div className="h-8 w-px bg-white/20"></div>
-            <button onClick={() => navigate("/experience")} className="hover:text-white transition-all">
+            <button onClick={() => navigate("/experience#contact")} className="hover:text-white transition-all">
                 Experience
             </button>
         </div>

@@ -309,7 +309,7 @@ const About = () => {
           <p className="text-stone-600 mb-8">Have questions? We'd love to hear from you.</p>
           
           
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6" id="contact">
             <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
