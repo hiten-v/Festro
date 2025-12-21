@@ -9,15 +9,45 @@ const fs = require('fs');
 const path = require('path');
 const app = express();
 
+// const corsOptions = {
+//   origin: process.env.FRONTEND_URL,
+//   credentials: true,
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+// };
+
+// app.use(cors(corsOptions));
+
+
+// CORS Configuration
 const corsOptions = {
-  origin: process.env.FRONTEND_URL,
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      process.env.FRONTEND_URL,
+      'http://localhost:5173',  // For local development
+      'https://your-vercel-app.vercel.app' // Your actual Vercel URL
+    ];
+    
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log('Blocked by CORS:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['set-cookie'] // Important for cookies
 };
 
-// CORS - MUST BE FIRST!
 app.use(cors(corsOptions));
+
+// Handle preflight requests
+app.options('*', cors(corsOptions));
 
 // Middleware
 app.use(express.json());
@@ -36,11 +66,17 @@ app.use(session({
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     maxAge: 7 * 24 * 60 * 60 * 1000,
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+     domain: process.env.NODE_ENV === 'production' ? '.onrender.com' : undefined 
   },
-  name: 'festro.sid'
+  name: 'festro.sid',
+   proxy: true 
 }));
 
+
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
 // MongoDB Connection
 // mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/event-management', {
 //   useNewUrlParser: true,
