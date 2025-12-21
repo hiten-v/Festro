@@ -22,12 +22,12 @@ export default function Navbar() {
   const navigate = useNavigate();
 
 
-
+  const API_URL = import.meta.env.VITE_API_URL;
 
   // Check authentication status
   const checkAuth = async () => {
     try {
-      const response = await fetch(`${process.env.VITE_API_URL}/api/auth/check`, {
+      const response = await fetch(`${API_URL}/api/auth/check`, {
         credentials: 'include' // Important: sends cookies
       });
       
@@ -36,7 +36,7 @@ export default function Navbar() {
       if (data.isAuthenticated) {
         setIsLoggedIn(true);
         // Fetch user data
-        const userResponse = await fetch(`${process.env.VITE_API_URL}/api/auth/me`, {
+        const userResponse = await fetch(`${API_URL}/api/auth/me`, {
           credentials: 'include'
         });
         
@@ -134,7 +134,7 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch(`${process.env.VITE_API_URL}/api/auth/logout`, {
+      const response = await fetch(`${API_URL}/api/auth/logout`, {
         method: 'POST',
         credentials: 'include'
       });

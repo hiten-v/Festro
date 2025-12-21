@@ -106,13 +106,13 @@ const About = () => {
     { value: "50+", label: "Cities Covered" },
     { value: "99%", label: "Satisfaction Rate" }
   ];
-
+  const API_URL = import.meta.env.VITE_API_URL;
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     
     try {
-      const response = await fetch(`${process.env.VITE_API_URL}/api/auth/contact`, {
+      const response = await fetch(`${API_URL}/api/auth/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

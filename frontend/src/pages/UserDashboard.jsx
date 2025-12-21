@@ -81,11 +81,13 @@ const UserDashboard = () => {
     return eventDateTime > today;
   };
 
+  const API_URL = import.meta.env.VITE_API_URL;
+
   // Function to fetch user reviews and process them
   const fetchUserReviews = async () => {
     try {
       console.log("Fetching user reviews from /api/ratings/my-reviews...");
-      const response = await fetch(`${process.env.VITE_API_URL}/api/ratings/my-reviews`, {
+      const response = await fetch(`${API_URL}/api/ratings/my-reviews`, {
         credentials: 'include'
       });
       
@@ -180,7 +182,7 @@ const UserDashboard = () => {
       console.log("Reviews map after fetch:", reviewsMap);
       
       // Refresh upcoming bookings
-      const upcomingRes = await fetch(`${process.env.VITE_API_URL}/api/users/upcoming-bookings`, {
+      const upcomingRes = await fetch(`${API_URL}/api/users/upcoming-bookings`, {
         credentials: 'include'
       });
       
@@ -221,7 +223,7 @@ const UserDashboard = () => {
       }
       
       // Refresh past bookings
-      const bookingsRes = await fetch(`${process.env.VITE_API_URL}/api/bookings/my-bookings`, {
+      const bookingsRes = await fetch(`${API_URL}/api/bookings/my-bookings`, {
         credentials: 'include'
       });
       
@@ -273,7 +275,7 @@ const UserDashboard = () => {
       }
       
       // Refresh favorites
-      const favRes = await fetch(`${process.env.VITE_API_URL}/api/users/favorites`, {
+      const favRes = await fetch(`${API_URL}/api/users/favorites`, {
         credentials: 'include'
       });
       
@@ -301,7 +303,7 @@ const UserDashboard = () => {
     const fetchData = async () => {
       try {
         // 1. Check if user is logged in via session
-        const sessionCheck = await fetch(`${process.env.VITE_API_URL}/api/auth/check`, {
+        const sessionCheck = await fetch(`${API_URL}/api/auth/check`, {
           credentials: 'include'
         });
         
@@ -317,7 +319,7 @@ const UserDashboard = () => {
         }
 
         // 2. Get user info
-        const userRes = await fetch(`${process.env.VITE_API_URL}/api/auth/me`, {
+        const userRes = await fetch(`${API_URL}/api/auth/me`, {
           credentials: 'include'
         });
         
@@ -347,7 +349,7 @@ const UserDashboard = () => {
   // Handle remove favorite (SESSION auth)
   const handleRemoveFavorite = async (eventId) => {
     try {
-      const response = await fetch(`${process.env.VITE_API_URL}/api/users/favorites/${eventId}`, {
+      const response = await fetch(`${API_URL}/api/users/favorites/${eventId}`, {
         method: 'POST',
         credentials: 'include'
       });
@@ -388,7 +390,7 @@ const UserDashboard = () => {
   const handleSubmitRating = async (rating, feedback) => {
     try {
       console.log("Submitting rating for event:", selectedPastEvent._id, "booking:", selectedPastEvent.bookingId);
-      const response = await fetch(`${process.env.VITE_API_URL}/api/ratings`, {
+      const response = await fetch(`${API_URL}/api/ratings`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -430,7 +432,7 @@ const UserDashboard = () => {
       
       const eventId = selectedPastEvent?._id || selectedEvent?._id;
       
-      const response = await fetch(`${process.env.VITE_API_URL}/api/users/events/${eventId}/report`, {
+      const response = await fetch(`${API_URL}/api/users/events/${eventId}/report`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

@@ -7,7 +7,7 @@
 //   useEffect(() => {
 //     const fetchUserData = async () => {
 //       try {
-//         const response = await fetch('${process.env.VITE_API_URL}/api/auth/me', {
+//         const response = await fetch('${API_URL}/api/auth/me', {
 //           credentials: 'include'
 //         });
 //         if (response.ok) {
@@ -90,11 +90,12 @@ const OrganiserDashboard = () => {
     image: null
   });
 
+  const API_URL = import.meta.env.VITE_API_URL;
   // Check if user is organizer
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch(`${process.env.VITE_API_URL}/api/auth/me`, {
+        const response = await fetch(`${API_URL}/api/auth/me`, {
           credentials: 'include'
         });
         
@@ -120,7 +121,7 @@ const OrganiserDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const response = await fetch(`${process.env.VITE_API_URL}/api/dashboard/stats`, {
+      const response = await fetch(`${API_URL}/api/dashboard/stats`, {
         credentials: 'include'
       });
 
@@ -182,7 +183,7 @@ const OrganiserDashboard = () => {
         }
       });
 
-      const response = await fetch(`${process.env.VITE_API_URL}/api/events`, {
+      const response = await fetch(`${API_URL}/api/events`, {
         method: 'POST',
         credentials: 'include',
         body: data
@@ -216,48 +217,12 @@ const OrganiserDashboard = () => {
   const [downloading, setDownloading] = useState(false);
 
 
-  // const downloadSimpleReport = async () => {
-  //   try {
-  //     setDownloading(true);
-      
-  //     const response = await fetch(`${process.env.VITE_API_URL}/api/report/simple-report`, {
-  //       credentials: 'include'
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error('Failed to generate report');
-  //     }
-
-  //     // Create blob from response
-  //     const blob = await response.blob();
-  //     const url = window.URL.createObjectURL(blob);
-  //     const a = document.createElement('a');
-      
-  //     a.href = url;
-  //     a.download = 'festro-sales-report.pdf';
-  //     document.body.appendChild(a);
-  //     a.click();
-      
-  //     // Cleanup
-  //     window.URL.revokeObjectURL(url);
-  //     document.body.removeChild(a);
-      
-  //     showToast('Report downloaded successfully!', 'success');
-      
-  //   } catch (error) {
-  //     console.error('Download report error:', error);
-  //     showToast('Failed to download report', 'error');
-  //   } finally {
-  //     setDownloading(false);
-  //   }
-  // };
-
   const downloadReport = async () => {
     try {
       setDownloading(true);
       
       // First test if data exists
-      const testResponse = await fetch(`${process.env.VITE_API_URL}/api/report/test-fix`, {
+      const testResponse = await fetch(`${API_URL}/api/report/test-fix`, {
         credentials: 'include'
       });
       
@@ -272,7 +237,7 @@ const OrganiserDashboard = () => {
       }
       
       // Generate PDF
-      const response = await fetch(`${process.env.VITE_API_URL}/api/report/simple-report`, {
+      const response = await fetch(`${API_URL}/api/report/simple-report`, {
         credentials: 'include'
       });
 

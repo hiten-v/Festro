@@ -6,11 +6,11 @@ const ProtectedRoute = ({ children, requiredRole }) => {
   const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
     const location = useLocation();
-
+  const API_URL = import.meta.env.VITE_API_URL;
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch(`${process.env.VITE_API_URL}/api/auth/check`, {
+        const response = await fetch(`${API_URL}/api/auth/check`, {
           credentials: 'include'
         });
         

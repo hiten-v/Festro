@@ -13,12 +13,12 @@ const [isConfirmed, setIsConfirmed] = useState(false);
 const [loading, setLoading] = useState(true);
 const [isSubmitting, setIsSubmitting] = useState(false);
 const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+const API_URL = import.meta.env.VITE_API_URL;
 // Check login status when component mounts
 useEffect(() => {
     const checkLogin = async () => {
         try {
-            const response = await fetch(`${process.env.VITE_API_URL}/api/auth/me`, {
+            const response = await fetch(`${API_URL}/api/auth/me`, {
                 credentials: 'include'
             });
             setIsLoggedIn(response.ok);
@@ -34,7 +34,7 @@ useEffect(() => {
 useEffect(() => {
     const fetchEvent = async () => {
         try {
-            const response = await fetch(`${process.env.VITE_API_URL}/api/events/${eventId}`);
+            const response = await fetch(`${API_URL}/api/events/${eventId}`);
             if (!response.ok) throw new Error('Event not found');
             const data = await response.json();
             setEvent(data);
@@ -105,7 +105,7 @@ const handleConfirm = async () => {
     setIsSubmitting(true);
 
     try {
-        const response = await fetch(`${process.env.VITE_API_URL}/api/bookings`, {
+        const response = await fetch(`${API_URL}/api/bookings`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -18,7 +18,7 @@ const ForgotPass = ({ isOpen, onClose, onBack }) => {
   if (!isOpen) return null;
 
   /* ===================== HANDLERS ===================== */
-
+  const API_URL = import.meta.env.VITE_API_URL;
   const sendOTP = async () => {
     if (!email.trim()) {
       setError("Email is required");
@@ -29,7 +29,7 @@ const ForgotPass = ({ isOpen, onClose, onBack }) => {
     setError("");
 
     try {
-      const res = await fetch(`${process.env.VITE_API_URL}/api/auth/forgot-password`, {
+      const res = await fetch(`${API_URL}/api/auth/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -57,7 +57,7 @@ const ForgotPass = ({ isOpen, onClose, onBack }) => {
     setError("");
 
     try {
-      const res = await fetch(`${process.env.VITE_API_URL}/api/auth/verify-otp`, {
+      const res = await fetch(`${API_URL}/api/auth/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp }),
@@ -90,7 +90,7 @@ const ForgotPass = ({ isOpen, onClose, onBack }) => {
     setError("");
 
     try {
-        const res = await fetch(`${process.env.VITE_API_URL}/api/auth/reset-password`, {
+        const res = await fetch(`${API_URL}/api/auth/reset-password`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

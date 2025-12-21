@@ -68,6 +68,8 @@ const LoginSignupPopup = ({ isOpen, onClose, onLoginSuccess }) => {
     }));
   };
 
+
+  const API_URL = import.meta.env.VITE_API_URL;
   const handleSubmit = async (e) => {
 
     e.preventDefault();
@@ -90,7 +92,7 @@ const LoginSignupPopup = ({ isOpen, onClose, onLoginSuccess }) => {
     const endpoint = isLogin ? 'login' : 'signup';
     
     try {
-      const response = await fetch(`${process.env.VITE_API_URL}/api/auth/${endpoint}`, {
+      const response = await fetch(`${API_URL}/api/auth/${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

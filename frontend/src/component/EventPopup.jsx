@@ -107,7 +107,7 @@ const EventPopup = ({ show, event, bookingId, onClose, onCancelSuccess }) => {
       setToast((prev) => ({ ...prev, show: false }));
     }, 3000);
   };
-
+  const API_URL = import.meta.env.VITE_API_URL;
   const handleEmailTicket = async () => {
     if (!bookingId) {
       showToast('Booking ID not found', 'error');
@@ -116,7 +116,7 @@ const EventPopup = ({ show, event, bookingId, onClose, onCancelSuccess }) => {
 
     setSendingEmail(true);
     try {
-      const response = await fetch(`${process.env.VITE_API_URL}/api/bookings/${bookingId}/send-ticket`, {
+      const response = await fetch(`${API_URL}/api/bookings/${bookingId}/send-ticket`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -152,7 +152,7 @@ const EventPopup = ({ show, event, bookingId, onClose, onCancelSuccess }) => {
 
     setCancelling(true);
     try {
-      const response = await fetch(`${process.env.VITE_API_URL}/api/bookings/${bookingId}/cancel`, {
+      const response = await fetch(`${API_URL}/api/bookings/${bookingId}/cancel`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

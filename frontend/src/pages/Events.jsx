@@ -45,11 +45,11 @@ const Events = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginPopup, setShowLoginPopup] = useState(false);
   const [pendingAction, setPendingAction] = useState(null); // Track what action was attempted
-
+  const API_URL = import.meta.env.VITE_API_URL;
   // Check if user is logged in via session
   const checkAuth = async () => {
     try {
-      const response = await fetch(`${process.env.VITE_API_URL}/api/auth/check`, {
+      const response = await fetch(`${API_URL}/api/auth/check`, {
         credentials: 'include'
       });
       if (response.ok) {
@@ -78,7 +78,7 @@ const Events = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch(`${process.env.VITE_API_URL}/api/events`);
+        const response = await fetch(`${API_URL}/api/events`);
         if (!response.ok) throw new Error('Failed to fetch events');
         const data = await response.json();
         
@@ -101,7 +101,7 @@ const Events = () => {
   // Fetch user favorites
   const fetchFavorites = async () => {
     try {
-      const response = await fetch(`${process.env.VITE_API_URL}/api/users/favorites`, {
+      const response = await fetch(`${API_URL}/api/users/favorites`, {
         credentials: 'include'
       });
       if (response.ok) {
@@ -123,7 +123,7 @@ const Events = () => {
     }
 
     try {
-      const response = await fetch(`${process.env.VITE_API_URL}/api/users/favorites/${eventId}`, {
+      const response = await fetch(`${API_URL}/api/users/favorites/${eventId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -294,7 +294,7 @@ const Events = () => {
         // Trigger favorite toggle after successful login
         setTimeout(async () => {
           try {
-            const response = await fetch(`${process.env.VITE_API_URL}/api/users/favorites/${pendingAction.eventId}`, {
+            const response = await fetch(`${API_URL}/api/users/favorites/${pendingAction.eventId}`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json'

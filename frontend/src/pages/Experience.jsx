@@ -16,10 +16,11 @@ const Experience = () => {
     image: null
   });
 
+  const API_URL = import.meta.env.VITE_API_URL;
   // Check authentication status
   const checkAuth = async () => {
     try {
-      const response = await fetch(`${process.env.VITE_API_URL}/api/auth/check`, {
+      const response = await fetch(`${API_URL}/api/auth/check`, {
         credentials: 'include'
       });
       
@@ -27,7 +28,7 @@ const Experience = () => {
       
       if (data.isAuthenticated) {
         setIsLoggedIn(true);
-        const userResponse = await fetch(`${process.env.VITE_API_URL}/api/auth/me`, {
+        const userResponse = await fetch(`${API_URL}/api/auth/me`, {
           credentials: 'include'
         });
         
@@ -73,7 +74,7 @@ const Experience = () => {
 
   const fetchExperiences = async () => {
     try {
-      const res = await fetch(`${process.env.VITE_API_URL}/api/experiences`);
+      const res = await fetch(`${API_URL}/api/experiences`);
       const data = await res.json();
       setExperiences(data);
     } catch (err) {
@@ -85,7 +86,7 @@ const Experience = () => {
 
   const fetchEvents = async () => {
     try {
-      const res = await fetch(`${process.env.VITE_API_URL}/api/events`);
+      const res = await fetch(`${API_URL}/api/events`);
       const data = await res.json();
       setEvents(data);
     } catch (err) {
@@ -120,7 +121,7 @@ const Experience = () => {
         data.append('image', formData.image);
       }
 
-      const res = await fetch(`${process.env.VITE_API_URL}/api/experiences`, {
+      const res = await fetch(`${API_URL}/api/experiences`, {
         method: 'POST',
         credentials: 'include',
         body: data
@@ -422,7 +423,7 @@ const Experience = () => {
                     {exp.image && (
                       <div className="w-full">
                         <img 
-                          src={exp.image.startsWith('http') ? exp.image : `${process.env.VITE_API_URL}${exp.image}`} 
+                          src={exp.image.startsWith('http') ? exp.image : `${API_URL}${exp.image}`} 
                           alt="Experience" 
                           className="w-full max-h-96 object-cover" 
                           onError={(e) => {
