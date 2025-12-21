@@ -3,17 +3,23 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
+const MongoStore = require('connect-mongo');
 require('dotenv').config();
-const path = require('path'); 
+const fs = require('fs');
+const path = require('path');
 const app = express();
 
-// CORS - MUST BE FIRST!
-app.use(cors({
-  origin: 'http://localhost:5173',
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production' 
+    ? process.env.FRONTEND_URL
+    : 'http://localhost:5173',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-}));
+};
+
+// CORS - MUST BE FIRST!
+app.use(cors(corsOptions));
 
 // Middleware
 app.use(express.json());
@@ -21,25 +27,34 @@ app.use(cookieParser());
 
 // Session middleware
 app.use(session({
-  secret: process.env.JWT_SECRET,
+  secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
+  store: MongoStore.create({ 
+    mongoUrl: process.env.MONGODB_URI,
+    ttl: 14 * 24 * 60 * 60 // 14 days
+  }),
   cookie: {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     maxAge: 7 * 24 * 60 * 60 * 1000,
-    sameSite: 'lax'
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
   },
   name: 'festro.sid'
 }));
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/event-management', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+// mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/event-management', {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true,
+// })
+// .then(() => console.log('MongoDB connected'))
+// .catch(err => console.log('MongoDB connection error:', err));
+
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/event-management')
 .then(() => console.log('MongoDB connected'))
 .catch(err => console.log('MongoDB connection error:', err));
+
 
 // Import routes
 const authRoutes = require('./routes/auth');
@@ -49,14 +64,32 @@ const ratingsRouter = require('./routes/ratings');
 const eventRoutes = require('./routes/events'); // ADD THIS
 const dashboardRoutes = require('./routes/dashboard');
 const experiencesRoutes = require('./routes/experiences');
-
-// In server.js, after other routes
 const reportRoutes = require('./routes/report');
 app.use('/api/report', reportRoutes);
 
 
-app.use('/uploads', express.static(path.join(__dirname, '../frontend/public/uploads')));
-app.use('/experiences', express.static(path.join(__dirname, '../frontend/public/experiences'))); 
+// app.use('/uploads', express.static(path.join(__dirname, '../frontend/public/uploads')));
+// app.use('/experiences', express.static(path.join(__dirname, '../frontend/public/experiences'))); 
+
+
+const uploadsDir = path.join(__dirname, '../frontend/public/uploads');
+const experiencesDir = path.join(__dirname, '../frontend/public/experiences');
+
+// Create directories if they don't exist
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+  console.log('Created uploads directory');
+}
+
+if (!fs.existsSync(experiencesDir)) {
+  fs.mkdirSync(experiencesDir, { recursive: true });
+  console.log('Created experiences directory');
+}
+
+// Then your static routes
+app.use('/uploads', express.static(uploadsDir));
+app.use('/experiences', express.static(experiencesDir));
+
 
 
 // Use routes
@@ -73,22 +106,31 @@ app.use("/api/newsletter", require("./routes/newsletter"));
 app.get('/', (req, res) => {
   res.json({ 
     message: 'Event Management API Running',
-    session: req.sessionID ? 'Active' : 'None'
+    session: req.sessionID ? 'Active' : 'None',
+    environment: process.env.NODE_ENV || 'development'
   });
 });
 
 // Clear session (logout test)
 app.get('/api/auth/logout', (req, res) => {
-  req.session.destroy();
-  res.clearCookie('festro.sid');
-  res.json({ message: 'Logged out successfully' });
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({ message: 'Failed to logout' });
+    }
+    res.clearCookie('festro.sid');
+    res.json({ message: 'Logged out successfully' });
+  });
 });
 
 
 // Error handling
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ message: "Something went wrong" });
+  res.status(500).json({ 
+    message: process.env.NODE_ENV === 'production' 
+      ? 'Something went wrong' 
+      : err.message 
+  });
 });
 
 const PORT = process.env.PORT || 5000;

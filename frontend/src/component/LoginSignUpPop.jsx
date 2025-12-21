@@ -90,7 +90,7 @@ const LoginSignupPopup = ({ isOpen, onClose, onLoginSuccess }) => {
     const endpoint = isLogin ? 'login' : 'signup';
     
     try {
-      const response = await fetch(`http://localhost:5000/api/auth/${endpoint}`, {
+      const response = await fetch(`${process.env.VITE_API_URL}/api/auth/${endpoint}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -246,7 +246,7 @@ const LoginSignupPopup = ({ isOpen, onClose, onLoginSuccess }) => {
                 Email
               </label>
               <input
-                type="email"
+                type="text"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}

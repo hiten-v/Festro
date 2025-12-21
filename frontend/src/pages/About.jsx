@@ -40,11 +40,6 @@ const About = () => {
       description: "Trusted payment gateways with SSL encryption for all transactions."
     },
     {
-      icon: <FaChartLine className="text-2xl text-[#702c2c]" />,
-      title: "Smart Recommendations",
-      description: "AI-powered suggestions based on your interests and past bookings."
-    },
-    {
       icon: <FaCalendarCheck className="text-2xl text-[#702c2c]" />,
       title: "Event Management",
       description: "Complete tools for organizers to create and manage their events."
@@ -73,7 +68,7 @@ const About = () => {
     {
       name: "Hiten Vaid",
       role: "Full Stack Developer",
-      avatar: "https://media.licdn.com/dms/image/v2/D5635AQFhomkTUte_kA/profile-framedphoto-shrink_400_400/profile-framedphoto-shrink_400_400/0/1714657742353?e=1766750400&v=beta&t=8AV7Mkb3TUV-Y7u0O9f7hRIvquN009PonFTk5bKeUEk",
+      // avatar: "https://media.licdn.com/dms/image/v2/D5635AQFhomkTUte_kA/profile-framedphoto-shrink_400_400/profile-framedphoto-shrink_400_400/0/1714657742353?e=1766750400&v=beta&t=8AV7Mkb3TUV-Y7u0O9f7hRIvquN009PonFTk5bKeUEk",
       bio: "Passionate about creating seamless user experiences with modern web technologies.",
       social: {
         github: "https://github.com/hiten-v",
@@ -84,7 +79,7 @@ const About = () => {
     {
       name: "Shreyansh Tripathi",
       role: "Full Stack Developer",
-      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?auto=format&fit=crop&q=80&w=100",
+      // avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?auto=format&fit=crop&q=80&w=100",
       bio: "Design enthusiast focused on creating intuitive and beautiful interfaces.",
       social: {
         github: "https://github.com/priya",
@@ -94,8 +89,8 @@ const About = () => {
     },
     {
       name: "Himanshu",
-      role: "Backend Developer",
-      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=100",
+      role: "Full Stack Developer",
+      // avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=100",
       bio: "Expert in scalable backend systems and database architecture.",
       social: {
         github: "https://github.com/rahul",
@@ -117,7 +112,7 @@ const About = () => {
     setIsSubmitting(true);
     
     try {
-      const response = await fetch('http://localhost:5000/api/auth/contact', {
+      const response = await fetch(`${process.env.VITE_API_URL}/api/auth/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -257,11 +252,11 @@ const About = () => {
                 transition={{ delay: index * 0.1, duration: 0.5 }}
                 className="bg-white rounded-xl border border-stone-200 p-6 text-center shadow-sm hover:shadow-md transition-shadow"
               >
-                <img 
+                {/* <img 
                   src={dev.avatar} 
                   alt={dev.name}
                   className="w-24 h-24 rounded-full mx-auto mb-4 object-cover border-4 border-[#702c2c]/10"
-                />
+                /> */}
                 <h3 className="text-xl font-bold mb-1">{dev.name}</h3>
                 <p className="text-[#702c2c] font-medium mb-3">{dev.role}</p>
                 <p className="text-stone-600 text-sm mb-6">{dev.bio}</p>

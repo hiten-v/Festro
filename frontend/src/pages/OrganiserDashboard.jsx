@@ -7,7 +7,7 @@
 //   useEffect(() => {
 //     const fetchUserData = async () => {
 //       try {
-//         const response = await fetch('http://localhost:5000/api/auth/me', {
+//         const response = await fetch('${process.env.VITE_API_URL}/api/auth/me', {
 //           credentials: 'include'
 //         });
 //         if (response.ok) {
@@ -94,7 +94,7 @@ const OrganiserDashboard = () => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/auth/me', {
+        const response = await fetch(`${process.env.VITE_API_URL}/api/auth/me`, {
           credentials: 'include'
         });
         
@@ -120,7 +120,7 @@ const OrganiserDashboard = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/dashboard/stats', {
+      const response = await fetch(`${process.env.VITE_API_URL}/api/dashboard/stats`, {
         credentials: 'include'
       });
 
@@ -182,7 +182,7 @@ const OrganiserDashboard = () => {
         }
       });
 
-      const response = await fetch('http://localhost:5000/api/events', {
+      const response = await fetch(`${process.env.VITE_API_URL}/api/events`, {
         method: 'POST',
         credentials: 'include',
         body: data
@@ -220,7 +220,7 @@ const OrganiserDashboard = () => {
   //   try {
   //     setDownloading(true);
       
-  //     const response = await fetch('http://localhost:5000/api/report/simple-report', {
+  //     const response = await fetch(`${process.env.VITE_API_URL}/api/report/simple-report`, {
   //       credentials: 'include'
   //     });
 
@@ -257,7 +257,7 @@ const OrganiserDashboard = () => {
       setDownloading(true);
       
       // First test if data exists
-      const testResponse = await fetch('http://localhost:5000/api/report/test-fix', {
+      const testResponse = await fetch(`${process.env.VITE_API_URL}/api/report/test-fix`, {
         credentials: 'include'
       });
       
@@ -272,7 +272,7 @@ const OrganiserDashboard = () => {
       }
       
       // Generate PDF
-      const response = await fetch('http://localhost:5000/api/report/simple-report', {
+      const response = await fetch(`${process.env.VITE_API_URL}/api/report/simple-report`, {
         credentials: 'include'
       });
 

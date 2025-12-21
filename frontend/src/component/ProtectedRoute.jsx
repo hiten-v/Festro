@@ -10,7 +10,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/auth/check', {
+        const response = await fetch(`${process.env.VITE_API_URL}/api/auth/check`, {
           credentials: 'include'
         });
         

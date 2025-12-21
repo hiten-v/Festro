@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
-const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const sendEmail = require("../utils/SendEmail");
 const otpEmailTemplate = require("../utils/otpEmailTemp");
@@ -72,11 +72,11 @@ router.post('/signup', async (req, res) => {
 
 
     // Create token
-    const token = jwt.sign(
-      { userId: user._id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: '7d' }
-    );
+    // const token = jwt.sign(
+    //   { userId: user._id, role: user.role },
+    //   process.env.JWT_SECRET,
+    //   { expiresIn: '7d' }
+    // );
 
     // Remove password from response
     const userResponse = user.toObject();
@@ -87,7 +87,7 @@ router.post('/signup', async (req, res) => {
     res.status(201).json({
       message: 'User created successfully',
       user: userResponse,
-      token
+      // token
     });
   } catch (error) {
     console.error(error);
@@ -144,11 +144,11 @@ router.post('/login', async (req, res) => {
 
 
     // Create token
-    const token = jwt.sign(
-      { userId: user._id, role: user.role },
-      process.env.JWT_SECRET || 'your-secret-key',
-      { expiresIn: '7d' }
-    );
+    // const token = jwt.sign(
+    //   { userId: user._id, role: user.role },
+    //   process.env.JWT_SECRET || 'your-secret-key',
+    //   { expiresIn: '7d' }
+    // );
 
     // Remove password from response
     const userResponse = user.toObject();
@@ -157,7 +157,7 @@ router.post('/login', async (req, res) => {
 
     res.json({
       message: 'Login successful',
-      token,
+      // token,
       user: userResponse
     });
   } 

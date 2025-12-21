@@ -116,7 +116,7 @@ const EventPopup = ({ show, event, bookingId, onClose, onCancelSuccess }) => {
 
     setSendingEmail(true);
     try {
-      const response = await fetch(`http://localhost:5000/api/bookings/${bookingId}/send-ticket`, {
+      const response = await fetch(`${process.env.VITE_API_URL}/api/bookings/${bookingId}/send-ticket`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -152,7 +152,7 @@ const EventPopup = ({ show, event, bookingId, onClose, onCancelSuccess }) => {
 
     setCancelling(true);
     try {
-      const response = await fetch(`http://localhost:5000/api/bookings/${bookingId}/cancel`, {
+      const response = await fetch(`${process.env.VITE_API_URL}/api/bookings/${bookingId}/cancel`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -225,7 +225,7 @@ const EventPopup = ({ show, event, bookingId, onClose, onCancelSuccess }) => {
       {/* Cancel Confirmation Modal */}
       <AnimatePresence>
         {showCancelConfirm && (
-          <div className="fixed inset-0 bg-black/20 z-[60] flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-black/20 z-60 flex items-center justify-center p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -249,7 +249,7 @@ const EventPopup = ({ show, event, bookingId, onClose, onCancelSuccess }) => {
                 
                 <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-4">
                   <div className="flex items-start gap-2">
-                    <FaExclamationTriangle className="text-red-600 mt-0.5 flex-shrink-0" />
+                    <FaExclamationTriangle className="text-red-600 mt-0.5 shrink-0" />
                     <div>
                       <p className="text-sm font-medium text-red-800 mb-2">Important Notes:</p>
                       <ul className="text-xs text-red-700 space-y-1 ml-1">
@@ -373,7 +373,7 @@ const EventPopup = ({ show, event, bookingId, onClose, onCancelSuccess }) => {
                 {/* Event Details */}
                 <div className="space-y-4 mb-6">
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#702c2c]/10 flex items-center justify-center text-[#702c2c] flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-[#702c2c]/10 flex items-center justify-center text-[#702c2c] shrink-0">
                       <FaCalendarAlt />
                     </div>
                     <div>
@@ -386,7 +386,7 @@ const EventPopup = ({ show, event, bookingId, onClose, onCancelSuccess }) => {
                   </div>
                   
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 rounded-full bg-[#702c2c]/10 flex items-center justify-center text-[#702c2c] flex-shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-[#702c2c]/10 flex items-center justify-center text-[#702c2c] shrink-0">
                       <FaMapMarkerAlt />
                     </div>
                     <div>

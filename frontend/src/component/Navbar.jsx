@@ -27,7 +27,7 @@ export default function Navbar() {
   // Check authentication status
   const checkAuth = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/auth/check', {
+      const response = await fetch(`${process.env.VITE_API_URL}/api/auth/check`, {
         credentials: 'include' // Important: sends cookies
       });
       
@@ -36,7 +36,7 @@ export default function Navbar() {
       if (data.isAuthenticated) {
         setIsLoggedIn(true);
         // Fetch user data
-        const userResponse = await fetch('http://localhost:5000/api/auth/me', {
+        const userResponse = await fetch(`${process.env.VITE_API_URL}/api/auth/me`, {
           credentials: 'include'
         });
         
@@ -134,7 +134,7 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/auth/logout', {
+      const response = await fetch(`${process.env.VITE_API_URL}/api/auth/logout`, {
         method: 'POST',
         credentials: 'include'
       });
