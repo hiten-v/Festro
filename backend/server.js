@@ -3,48 +3,48 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
-const MongoStore = require('connect-mongo');
+// const MongoStore = require('connect-mongo');
 require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const app = express();
 
-// const corsOptions = {
-//   origin: process.env.FRONTEND_URL,
-//   credentials: true,
-//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-//   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-// };
-
-// app.use(cors(corsOptions));
-
-
-// CORS Configuration
 const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    const allowedOrigins = [
-      process.env.FRONTEND_URL,
-      'http://localhost:5173',  // For local development
-      'https://your-vercel-app.vercel.app' // Your actual Vercel URL
-    ];
-    
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.log('Blocked by CORS:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: process.env.FRONTEND_URL || 'https://festro.vercel.app',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  exposedHeaders: ['set-cookie'] // Important for cookies
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 };
 
 app.use(cors(corsOptions));
+
+
+// CORS Configuration
+// const corsOptions = {
+//   origin: function (origin, callback) {
+//     // Allow requests with no origin (like mobile apps or curl requests)
+//     if (!origin) return callback(null, true);
+    
+//     const allowedOrigins = [
+//       process.env.FRONTEND_URL,
+//       'http://localhost:5173',  // For local development
+//       'https://festro.vercel.app' // Your actual Vercel URL
+//     ];
+    
+//     if (allowedOrigins.includes(origin)) {
+//       callback(null, true);
+//     } else {
+//       console.log('Blocked by CORS:', origin);
+//       callback(new Error('Not allowed by CORS'));
+//     }
+//   },
+//   credentials: true,
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+//   exposedHeaders: ['set-cookie'] // Important for cookies
+// };
+
+// app.use(cors(corsOptions));
 
 
 // Middleware
@@ -56,25 +56,20 @@ app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({ 
-    mongoUrl: process.env.MONGODB_URI,
-    ttl: 14 * 24 * 60 * 60 // 14 days
-  }),
+  // store: MongoStore.create({ 
+  //   mongoUrl: process.env.MONGODB_URI,
+  //   ttl: 14 * 24 * 60 * 60 // 14 days
+  // }),
   cookie: {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     maxAge: 7 * 24 * 60 * 60 * 1000,
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-     domain: process.env.NODE_ENV === 'production' ? '.onrender.com' : undefined 
   },
-  name: 'festro.sid',
-   proxy: true 
+  name: 'festro.sid' 
 }));
 
 
-if (process.env.NODE_ENV === 'production') {
-  app.set('trust proxy', 1);
-}
 // MongoDB Connection
 // mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/event-management', {
 //   useNewUrlParser: true,
