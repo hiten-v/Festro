@@ -107,6 +107,8 @@ const About = () => {
     { value: "99%", label: "Satisfaction Rate" }
   ];
   const API_URL = import.meta.env.VITE_API_URL;
+
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -315,7 +317,6 @@ const About = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  required
                   className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-lg focus:ring-2 focus:ring-[#702c2c]/20 focus:border-[#702c2c] outline-none"
                   placeholder="John Doe"
                 />
@@ -326,11 +327,10 @@ const About = () => {
                   Email Address *
                 </label>
                 <input
-                  type="email"
+                  type="text"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  required
                   className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-lg focus:ring-2 focus:ring-[#702c2c]/20 focus:border-[#702c2c] outline-none"
                   placeholder="john@example.com"
                 />
@@ -346,7 +346,6 @@ const About = () => {
                 name="subject"
                 value={formData.subject}
                 onChange={handleChange}
-                required
                 className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-lg focus:ring-2 focus:ring-[#702c2c]/20 focus:border-[#702c2c] outline-none"
                 placeholder="How can we help?"
               />
@@ -360,7 +359,6 @@ const About = () => {
                 name="message"
                 value={formData.message}
                 onChange={handleChange}
-                required
                 rows="5"
                 className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-lg focus:ring-2 focus:ring-[#702c2c]/20 focus:border-[#702c2c] outline-none"
                 placeholder="Tell us about your inquiry..."

@@ -37,7 +37,7 @@ module.exports = async (email) => {
     html: `
       <div style="
         font-family:Arial;
-        background:#0f172a;
+        background-color: #ebe9e1;
         padding:30px;
         color:#fff;
         border-radius:12px;"
@@ -52,11 +52,11 @@ module.exports = async (email) => {
 
         <div style="margin-top:30px;background:#020617;padding:20px;border-radius:10px">
           <p>
-            🎟 Get updates on trending events  
+            🎟 &nbsp; Get updates on trending events  
             <br/><br/>
-            🔥 Exclusive offers  
+            🔥 &nbsp; Exclusive offers  
             <br/><br/>
-            📍 Events near you
+            📍&nbsp;  Events near you
           </p>
         </div>
 

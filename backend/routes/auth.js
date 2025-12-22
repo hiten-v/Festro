@@ -5,7 +5,7 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const sendEmail = require("../utils/SendEmail");
 const otpEmailTemplate = require("../utils/otpEmailTemp");
-const contactEmailTemplate = require("../utils/contactEmailTemplate");
+
 // const { OAuth2Client } = require('google-auth-library');
 // const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -376,10 +376,14 @@ router.post('/contact', async (req, res) => {
       });
     }
 
-    const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
+    const adminEmail = process.env.EMAIL_USER;
+
+    let adminEmailSent = false;
+    let autoReplySent = false;
+
 
     if (!adminEmail) {
-      console.error('ADMIN_EMAIL or EMAIL_USER not configured in .env');
+      console.error('EMAIL_USER not configured in .env');
       return res.status(500).json({ 
         success: false,
         message: 'Email configuration error' 
@@ -387,23 +391,44 @@ router.post('/contact', async (req, res) => {
     }
 
     // Send email to admin
-    await sendEmail({
-      to: adminEmail,
-      subject: `Festro Contact: ${subject}`,
-      text: `
-        New Contact Form Submission:
+    try {
+      await sendEmail({
+        to: adminEmail,
+        subject: `Festro Contact: ${subject}`,
+        text: "New Contact Form Submission",
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <div style="background-color: #702c2c; padding: 20px; text-align: center; color: white;">
+              <img style="height: 70px; margin-bottom: 10px;" src="https://festro.vercel.app/logo.png" alt="Festro Logo" />
+              <h2>New Contact Form Submission</h2>
+            </div>
 
-        Name: ${name}
-        Email: ${email}
-        Subject: ${subject}
-        Message: ${message}
+            <div style="padding: 30px; background-color: white;">
+              <p>From: <strong>${name}</strong>,</p>
+              <p>Subject: <strong>"${subject}"</strong> </p>
+              <p>Email: <strong>${email}</strong> </p>
+              <div style="margin-top: 30px; padding: 15px; background-color: white; border-left: 4px solid #702c2c;">
+                <p><strong>Message:</strong></p>
+                <p style="white-space: pre-wrap;">${message}</p>
+              </div>
+              <p style="margin-top: 30px;"><strong>The Festro Team</strong></p>
+            </div>
+            <div style="text-align: center; padding: 20px; color: #666; font-size: 12px; background-color: #f1f1f1;">
+              <p>© ${new Date().getFullYear()} Festro Event Management System</p>
+              <p>This is an automated message, please do not reply directly to this email.</p>
+            </div>
+          </div>
+        `
+      });
+      adminEmailSent = true;
+      console.log('Admin email sent successfully');
+    }
+    catch(error)
+    {
+      console.error('Admin email failed:', error.message);
+    }
 
-        Timestamp: ${new Date().toISOString()}
-      `,
-      html: contactEmailTemplate({ name, email, subject, message })
-    });
-
-    // Optional: Send auto-reply to user
+    // Send auto-reply to user
     try {
       await sendEmail({
         to: email,
@@ -412,9 +437,11 @@ router.post('/contact', async (req, res) => {
         html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background-color: #702c2c; padding: 20px; text-align: center; color: white;">
+            <img style="height: 70px; margin-bottom: 10px;" src="https://festro.vercel.app/logo.png" alt="Festro Logo" />
             <h2>Thank You for Contacting Festro</h2>
           </div>
-          <div style="padding: 30px; background-color: #182436;">
+
+          <div style="padding: 30px; background-color: white;">
             <p>Dear <strong>${name}</strong>,</p>
             <p>Thank you for reaching out to Festro. We have received your message regarding <strong>"${subject}"</strong> and will get back to you within 24-48 hours.</p>
             <p>Our team is reviewing your inquiry and will respond to <strong>${email}</strong>.</p>
@@ -431,9 +458,12 @@ router.post('/contact', async (req, res) => {
         </div>
         `
       });
-    } catch (autoReplyError) {
-      console.error('Auto-reply email failed:', autoReplyError);
-      // Don't fail the main request if auto-reply fails
+      autoReplySent = true;
+      console.log('Auto-reply email sent successfully');
+    } 
+    catch (autoReplyError) {
+
+      console.error('Auto-reply email failed:', autoReplyError.message);
     }
 
     res.json({
