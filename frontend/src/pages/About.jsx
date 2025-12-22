@@ -155,7 +155,7 @@ const About = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           // animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-16 transition ease-in max-md:m-10"
+          className="text-center mb-16 transition ease-in"
         >
           <h1 className="text-4xl md:text-5xl font-extrabold mb-6">
             About <span className="text-[#702c2c]">Festro</span>
@@ -183,7 +183,7 @@ const About = () => {
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-md:m-10">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-md:m-2">
             {features.map((feature, index) => (
               <motion.div
                 key={index}
@@ -203,7 +203,7 @@ const About = () => {
         </section>
 
         {/* Our Story */}
-        <section className="mb-20 bg-white rounded-2xl p-8 md:p-12 border border-stone-200 shadow-sm max-md:m-10">
+        <section className="mb-20 bg-white rounded-2xl p-8 md:p-12 border border-stone-200 shadow-sm max-md:m-2">
           <div className="flex flex-col lg:flex-row items-center gap-12">
             <div className="lg:w-1/2">
               <img 
@@ -235,7 +235,7 @@ const About = () => {
         </section>
 
         {/* Meet Our Team */}
-        <section className="mb-20 max-md:m-10">
+        <section className="mb-20 max-md:m-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Meet Our Team</h2>
             <p className="text-stone-600 max-w-2xl mx-auto">
@@ -298,7 +298,7 @@ const About = () => {
           initial={{ opacity: 0, y: -30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="bg-white rounded-2xl p-8 border border-stone-200 shadow-sm flex-col justify-center items-center max-md:m-10"
+          className="bg-white rounded-2xl p-8 border border-stone-200 shadow-sm flex-col justify-center items-center "
         >
           <h2 className="text-3xl font-bold mb-2">Get In Touch</h2>
           <p className="text-stone-600 mb-8">Have questions? We'd love to hear from you.</p>

@@ -525,7 +525,7 @@ const UserDashboard = () => {
           </div>
         </div>
       ) : (
-        <div className="max-w-7xl mx-auto mb-8 pt-25 max-md:m-10 max-2xl:m-5">
+        <div className="max-w-7xl mx-auto mb-8 pt-10 max-md:m-10 max-2xl:m-5">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
               <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900">
@@ -579,15 +579,19 @@ const UserDashboard = () => {
       </div>
 
       {/* Upcoming Events Slider */}
-      <div className="max-w-7xl mx-auto mb-12 max-md:m-10 max-2xl:m-5">
+      <div className="max-w-7xl mx-auto mb-12 max-md:m-5 max-2xl:m-5">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
+          <div className="w-full flex items-center justify-between gap-2">
+            <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
             <FaCalendarAlt className="text-[#702c2c]" />
             Your Upcoming Events
-            <span className="text-sm font-normal text-stone-500 ml-2">
-              ({filteredUpcomingEvents.length} booked)
+            </h2>
+            <span className="text-sm font-normal text-stone-500 flex justify-center items-center gap-1">
+              <span>({filteredUpcomingEvents.length}</span> 
+              <span>booked)</span>
             </span>
-          </h2>
+          </div>
+          
           {filteredUpcomingEvents.length > 3 && (
             <div className="flex items-center gap-2">
               <span className="text-sm text-stone-500">
@@ -735,15 +739,18 @@ const UserDashboard = () => {
 
       {/* Favorite Events Slider */}
       {!loading && favoriteEvents.length > 0 && (
-        <div id="favorites" className="max-w-7xl mx-auto mb-12 max-md:m-10 max-2xl:m-5">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-              <FaHeart className="text-red-500" />
-              Your Favorite Events
-              <span className="text-sm font-normal text-stone-500 ml-2">
-                ({favoriteEvents.length} favorited)
+        <div id="favorites" className="max-w-7xl pt-20 mx-auto mb-12 max-md:m-4 max-2xl:m-5">
+          <div className="flex flex-col justify-center gap-2 items-center mb-6">
+            <div className="w-full flex justify-between gap-2">
+              <h2 className="text-xl font-bold text-slate-800 flex items-center justify-center gap-2">
+                <FaHeart className="text-[#702c2c] text-xl" />
+                <span>Your Favorite Events</span>
+              </h2>
+              <span className="text-sm font-normal text-stone-500 flex justify-center items-center gap-1">
+                <span>({favoriteEvents.length}</span> 
+                <span>favourited)</span>
               </span>
-            </h2>
+            </div>
             {favoriteEvents.length > 3 && (
               <div className="flex items-center gap-2">
                 <span className="text-sm text-stone-500">

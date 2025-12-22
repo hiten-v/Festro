@@ -566,8 +566,8 @@ const OrganiserDashboard = () => {
                         <div className="text-xs text-stone-500">{sale?.user?.email || 'No email'}</div>
                       </td>
                       <td className="px-5 py-3">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                          {sale?.tickets || 0} tickets
+                        <span className="inline-flex max-md:flex-col max-md:gap-0 items-center justify-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          <span>{sale?.tickets || 0} </span>tickets
                         </span>
                       </td>
                       <td className="px-5 py-3">

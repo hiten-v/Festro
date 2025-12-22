@@ -1,12 +1,31 @@
 const nodemailer = require("nodemailer");
 
+// const transporter = nodemailer.createTransport({
+//   service: "gmail",
+//   auth: {
+//     user: process.env.EMAIL_USER,
+//     pass: process.env.EMAIL_PASS
+//   }
+// });/
+
 const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
-});
+      host: "smtp.gmail.com",
+      port: 465, // ← USE PORT 465 (SSL), NOT 587
+      secure: true, // ← true for port 465
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+      // CRITICAL for Render/Gmail:
+      connectionTimeout: 30000, // 30 seconds
+      socketTimeout: 30000, // 30 seconds
+      greetingTimeout: 30000, // 30 seconds
+      tls: {
+        ciphers: 'SSLv3',
+        rejectUnauthorized: false // Required for some Gmail connections
+      }
+    });
+
 
 module.exports = async (email) => {
   const logoUrl = "https://festro.vercel.app/logo.png";

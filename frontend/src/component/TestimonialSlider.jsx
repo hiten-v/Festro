@@ -111,7 +111,7 @@ export default function TestimonialSlider() {
           </button>
         )}
 
-        <div className="p-10 m-10 bg-slate-100 shadow-xl rounded-xl">
+        <div className="p-10 m-10 bg-slate-100 shadow-xl rounded-xl max-md:m-0">
           <AnimatePresence mode="wait">
             <motion.div
               key={page}
