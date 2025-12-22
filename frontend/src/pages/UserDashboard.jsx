@@ -93,7 +93,7 @@ const UserDashboard = () => {
       
       if (response.ok) {
         const reviews = await response.json();
-        console.log("Raw reviews data from API:", reviews);
+        // console.log("Raw reviews data from API:", reviews);
         
         // Create a map of reviews by eventId
         const reviewsMap = {};
@@ -125,7 +125,7 @@ const UserDashboard = () => {
           }
         });
         
-        console.log("Processed reviews map:", reviewsMap);
+        // console.log("Processed reviews map:", reviewsMap);
         setUserReviews(reviewsMap);
         return reviewsMap;
       } else {
@@ -179,7 +179,7 @@ const UserDashboard = () => {
       
       // First, fetch user reviews
       const reviewsMap = await fetchUserReviews();
-      console.log("Reviews map after fetch:", reviewsMap);
+      // console.log("Reviews map after fetch:", reviewsMap);
       
       // Refresh upcoming bookings
       const upcomingRes = await fetch(`${API_URL}/api/users/upcoming-bookings`, {
@@ -229,7 +229,7 @@ const UserDashboard = () => {
       
       if (bookingsRes.ok) {
         const bookings = await bookingsRes.json();
-        console.log("All bookings from API:", bookings);
+        // console.log("All bookings from API:", bookings);
         
         const past = bookings
           .filter(booking => {
@@ -247,9 +247,9 @@ const UserDashboard = () => {
             const hasReview = checkIfBookingReviewed(reviewsMap, eventId, bookingId);
             const userReview = reviewsMap[eventId];
             
-            console.log(`Processing booking - Event: ${eventId}, Booking: ${bookingId}, Has Review: ${hasReview}`);
-            console.log(`Event ID type: ${typeof eventId}, Booking ID: ${bookingId}`);
-            console.log(`Reviews map keys:`, Object.keys(reviewsMap));
+            // console.log(`Processing booking - Event: ${eventId}, Booking: ${bookingId}, Has Review: ${hasReview}`);
+            // console.log(`Event ID type: ${typeof eventId}, Booking ID: ${bookingId}`);
+            // console.log(`Reviews map keys:`, Object.keys(reviewsMap));
             
             return {
               _id: eventId,
@@ -270,7 +270,7 @@ const UserDashboard = () => {
           })
           .sort((a, b) => new Date(b.date + 'T' + b.time) - new Date(a.date + 'T' + a.time));
         
-        console.log("Final past bookings with review status:", past);
+        // console.log("Final past bookings with review status:", past);
         setPastBookings(past);
       }
       
@@ -330,7 +330,7 @@ const UserDashboard = () => {
         
         const userData = await userRes.json();
         setUser(userData.user);
-        console.log("Current user:", userData.user);
+        // console.log("Current user:", userData.user);
 
         // 3. Fetch all data using refreshDashboardData
         await refreshDashboardData();

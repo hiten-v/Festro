@@ -121,7 +121,7 @@ const eventRoutes = require('./routes/events'); // ADD THIS
 const dashboardRoutes = require('./routes/dashboard');
 const experiencesRoutes = require('./routes/experiences');
 const reportRoutes = require('./routes/report');
-app.use('/api/report', reportRoutes);
+
 
 
 // app.use('/uploads', express.static(path.join(__dirname, '../frontend/public/uploads')));
@@ -157,7 +157,7 @@ app.use('/api/events', eventRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/experiences', experiencesRoutes);
 app.use("/api/newsletter", require("./routes/newsletter"));
-
+app.use('/api/report', reportRoutes);
 
 app.get('/', (req, res) => {
   res.json({ 
