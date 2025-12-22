@@ -60,7 +60,7 @@ export default function Navbar() {
   useEffect(() => {
     checkAuth();
 
-    const interval = setInterval(checkAuth, 3000); // Check every 3 seconds
+    const interval = setInterval(checkAuth, 2000); // Check every 3 seconds
     
     return () => clearInterval(interval);
   }, []);

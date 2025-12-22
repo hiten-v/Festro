@@ -50,7 +50,7 @@ const Experience = () => {
 
   useEffect(() => {
     checkAuth();
-    const interval = setInterval(checkAuth, 1000);
+    const interval = setInterval(checkAuth, 2000);
     return () => clearInterval(interval);
   }, []);
 

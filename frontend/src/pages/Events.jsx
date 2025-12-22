@@ -69,7 +69,7 @@ const Events = () => {
   useEffect(() => {
     checkAuth();
 
-    const interval = setInterval(checkAuth, 5000); // Check every 5 seconds
+    const interval = setInterval(checkAuth, 2000); // Check every 5 seconds
     
     return () => clearInterval(interval);
   }, []);
