@@ -9,39 +9,61 @@ const fs = require('fs');
 const path = require('path');
 const app = express();
 
-const corsOptions = {
-  origin: process.env.FRONTEND_URL || 'https://festro.vercel.app',
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-};
-
-app.use(cors(corsOptions));
+// const allowedOrigins = [
+//   process.env.FRONTEND_URL,  // Your Vercel URL
+//   'http://localhost:5173',   // Local development
+//   'http://localhost:3000'    // Alternative local port
+// ];
 
 
-// CORS Configuration
 // const corsOptions = {
 //   origin: function (origin, callback) {
 //     // Allow requests with no origin (like mobile apps or curl requests)
 //     if (!origin) return callback(null, true);
     
-//     const allowedOrigins = [
-//       process.env.FRONTEND_URL,
-//       'http://localhost:5173',  // For local development
-//       'https://festro.vercel.app' // Your actual Vercel URL
-//     ];
-    
 //     if (allowedOrigins.includes(origin)) {
 //       callback(null, true);
 //     } else {
-//       console.log('Blocked by CORS:', origin);
+//       console.log('❌ Blocked by CORS:', origin);
 //       callback(new Error('Not allowed by CORS'));
 //     }
 //   },
 //   credentials: true,
 //   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
 //   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-//   exposedHeaders: ['set-cookie'] // Important for cookies
+//   exposedHeaders: ['set-cookie']
+// };
+
+
+// In server.js - Production CORS
+const corsOptions = {
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'https://festro.vercel.app', // Your Vercel URL
+      'https://www.festro.vercel.app', // With www
+      'http://localhost:5173' // For dev
+    ];
+    
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log('❌ Blocked by CORS:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['set-cookie']
+};
+
+app.use(cors(corsOptions));
+
+// const corsOptions = {
+//   origin: process.env.FRONTEND_URL || 'https://festro.vercel.app',
+//   credentials: true,
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 // };
 
 // app.use(cors(corsOptions));
@@ -66,8 +88,15 @@ app.use(session({
     maxAge: 7 * 24 * 60 * 60 * 1000,
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
   },
-  name: 'festro.sid' 
+  name: 'festro.sid',
+  proxy: true // ← TRUST PROXY FOR COOKIES
 }));
+
+// MUST COME AFTER SESSION MIDDLEWARE
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
 
 
 // MongoDB Connection
