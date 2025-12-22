@@ -156,3 +156,5 @@ const sendEmail = async ({ to, subject, text, html }) => {
     throw error;
   }
 };
+
+module.exports = sendEmail;
