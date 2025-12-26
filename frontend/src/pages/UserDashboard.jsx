@@ -922,21 +922,21 @@ const UserDashboard = () => {
           </div>
         ) : pastBookings.length > 0 ? (
           <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
-            <div className="divide-y divide-stone-100">
+            <div className="divide-y divide-stone-200">
               {pastBookings.slice(0, 5).map((event) => (
                 <div
                   key={`${event.bookingId || event._id}-${event.hasReview ? 'rated' : 'not-rated'}`}
-                  className="p-4 hover:bg-stone-50 transition-colors flex items-center justify-between"
+                  className="p-4 hover:bg-stone-50 transition-colors flex  justify-between"
                 >
-                  <div className="flex items-center gap-4">
+                  <div className="flex max-md:flex-col gap-4 max-md:gap-1">
                     <div className="w-12 h-12 bg-stone-100 rounded-lg flex items-center justify-center">
                       <FaCalendarAlt className="text-stone-400" />
                     </div>
                     <div>
                       <h4 className="font-medium text-slate-800">{event.title}</h4>
-                      <div className="flex items-center text-stone-500 text-sm gap-3 mt-1">
-                        <span>{event.date} {event.time && `• ${event.time}`}</span>
-                        <span>•</span>
+                      <div className="flex max-md:flex-col text-stone-500 text-sm gap-1 mt-1">
+                        <span>{event.date}</span>
+                        <span>{event.time && `• ${event.time} •`}</span>
                         <span>{event.location}</span>
                       </div>
                       {event.hasReview && event.userReview && (
@@ -975,9 +975,8 @@ const UserDashboard = () => {
       {/* Report Section */}
       <div className="max-w-7xl mx-auto pb-12 max-md:mx-10 max-2xl:mx-5">
         <div className="bg-white rounded-2xl border border-stone-200 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-              <FaExclamationCircle className="text-orange-500" />
+          <div className="flex max-md:flex-col max-md:gap-3 items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-slate-800 gap-2">
               Report an Issue
             </h2>
             <button
@@ -1066,7 +1065,7 @@ const UserDashboard = () => {
                   />
                 </div>
                 
-                <div className="flex justify-end gap-3 pt-2">
+                <div className="flex max-md:flex-col justify-end gap-3 pt-2">
                   <button
                     type="button"
                     onClick={() => setShowReportForm(false)}

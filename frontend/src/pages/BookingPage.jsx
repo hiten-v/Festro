@@ -234,6 +234,9 @@ return (
                                         <p className="font-medium">{event.location}</p>
                                     </div>
                                 </div>
+                                <div className="flex items-center pt-4 text-stone-600">
+                                    {event.description}
+                                </div>
                             </div>
 
                             <div className="border-t border-stone-100 pt-8">

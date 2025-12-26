@@ -4,7 +4,7 @@ import { FaCalendarAlt, FaMapMarkerAlt, FaLocationArrow, FaHeart, FaRegHeart } f
 import EventFilters from '../component/EventFilters';
 import { useNavigate } from 'react-router-dom';
 import LoginSignupPopup from '../component/LoginSignUpPop';
-
+import Toast from '../component/Toast';
 // Haversine Formula to calculate distance in KM
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
   const R = 6371; // Radius of Earth in km
@@ -74,6 +74,20 @@ const Events = () => {
     return () => clearInterval(interval);
   }, []);
 
+
+   const [toast, setToast] = useState({
+      show: false,
+      message: "",
+      type: "success",
+    });
+  
+    const showToast = (message, type = "success") => {
+      setToast({ show: true, message, type });
+      setTimeout(() => {
+        setToast((prev) => ({ ...prev, show: false }));
+      }, 3000);
+    };
+  
   // Fetch Events from Backend
   useEffect(() => {
     const fetchEvents = async () => {
@@ -160,7 +174,7 @@ const Events = () => {
 
   const handleLocationClick = () => {
     if (!navigator.geolocation) {
-      alert("Geolocation is not supported by your browser");
+      showToast("Geolocation is not supported by your browser","error");
       return;
     }
 
@@ -186,9 +200,10 @@ const Events = () => {
         if (detectedLocation) {
           setLocationFilter(detectedLocation);
           sessionStorage.setItem("userLocation", detectedLocation); // Persist
-          alert(`Found you in ${detectedLocation}`);
+
+          showToast(`Found you in ${detectedLocation}`,"success");
         } else {
-          alert("Could not determine precise location");
+          showToast("Could not determine precise location","error");
         }
       } catch (error) {
         console.error("Geocoding error:", error);
@@ -317,6 +332,7 @@ const Events = () => {
   return (
     <div className="min-h-screen bg-[#ebe9e1] font-sans text-slate-900">
       <div className="w-full bg-slate-900 top-0 bottom-90 p-11.5"></div>
+      <Toast toast={toast} setToast={setToast} />
       {/* HEADER SECTION */}
       <div className="max-w-7xl mx-auto pt-24 px-4 md:px-8 lg:px-12 max-md:mx-3">
         <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-4 tracking-tight">
@@ -436,7 +452,7 @@ const Events = () => {
                         {distance && <span className="ml-auto text-stone-400">({distance} km)</span>}
                       </p>
 
-                      <p className="text-stone-500 text-sm mb-4 line-clamp-2">{event.description}</p>
+                      <p className="text-stone-500 text-sm mb-4 line-clamp-2 leading-relaxed h-12">{event.description}</p>
 
                       <div className="flex items-center justify-between border-t border-stone-100 pt-3">
                         <div>
