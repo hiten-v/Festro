@@ -3,36 +3,11 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
-// const MongoStore = require('connect-mongo');
 require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const app = express();
 
-// const allowedOrigins = [
-//   process.env.FRONTEND_URL,  // Your Vercel URL
-//   'http://localhost:5173',   // Local development
-//   'http://localhost:3000'    // Alternative local port
-// ];
-
-
-// const corsOptions = {
-//   origin: function (origin, callback) {
-//     // Allow requests with no origin (like mobile apps or curl requests)
-//     if (!origin) return callback(null, true);
-    
-//     if (allowedOrigins.includes(origin)) {
-//       callback(null, true);
-//     } else {
-//       console.log('❌ Blocked by CORS:', origin);
-//       callback(new Error('Not allowed by CORS'));
-//     }
-//   },
-//   credentials: true,
-//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-//   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-//   exposedHeaders: ['set-cookie']
-// };
 
 
 // In server.js - Production CORS
@@ -47,7 +22,7 @@ const corsOptions = {
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      console.log('❌ Blocked by CORS:', origin);
+      console.log('Blocked by CORS:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
@@ -89,23 +64,15 @@ app.use(session({
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
   },
   name: 'festro.sid',
-  proxy: true // ← TRUST PROXY FOR COOKIES
+  proxy: true 
 }));
 
-// MUST COME AFTER SESSION MIDDLEWARE
+
 if (process.env.NODE_ENV === 'production') {
   app.set('trust proxy', 1);
 }
 
 
-
-// MongoDB Connection
-// mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/event-management', {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-// })
-// .then(() => console.log('MongoDB connected'))
-// .catch(err => console.log('MongoDB connection error:', err));
 
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/event-management')
 .then(() => console.log('MongoDB connected'))
@@ -121,7 +88,7 @@ const eventRoutes = require('./routes/events'); // ADD THIS
 const dashboardRoutes = require('./routes/dashboard');
 const experiencesRoutes = require('./routes/experiences');
 const reportRoutes = require('./routes/report');
-
+const testimonialRoutes=require('./routes/testimonials');
 
 
 // app.use('/uploads', express.static(path.join(__dirname, '../frontend/public/uploads')));
@@ -158,6 +125,10 @@ app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/experiences', experiencesRoutes);
 app.use("/api/newsletter", require("./routes/newsletter"));
 app.use('/api/report', reportRoutes);
+app.use('/api/testimonials',testimonialRoutes);
+
+
+
 
 app.get('/', (req, res) => {
   res.json({ 

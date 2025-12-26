@@ -282,7 +282,6 @@ const Experience = () => {
                       Your Experience *
                     </label>
                     <textarea 
-                      required 
                       rows="4" 
                       className="w-full px-4 py-3 bg-white border border-stone-200 rounded-xl 
                         focus:ring-2 focus:ring-[#702c2c]/20 focus:border-[#702c2c] outline-none

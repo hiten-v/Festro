@@ -15,7 +15,7 @@ const requireAuth = (req, res, next) => {
   }
 };
 
-// =============== FAVORITES ROUTES ===============
+
 
 // Get user's favorites
 router.get('/favorites', requireAuth, async (req, res) => {

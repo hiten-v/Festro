@@ -68,36 +68,25 @@ const About = () => {
     {
       name: "Hiten Vaid",
       role: "Full Stack Developer",
-      // avatar: "https://media.licdn.com/dms/image/v2/D5635AQFhomkTUte_kA/profile-framedphoto-shrink_400_400/profile-framedphoto-shrink_400_400/0/1714657742353?e=1766750400&v=beta&t=8AV7Mkb3TUV-Y7u0O9f7hRIvquN009PonFTk5bKeUEk",
+      avatar: "https://media.licdn.com/dms/image/v2/D5635AQFhomkTUte_kA/profile-framedphoto-shrink_400_400/profile-framedphoto-shrink_400_400/0/1714657742353?e=1766750400&v=beta&t=8AV7Mkb3TUV-Y7u0O9f7hRIvquN009PonFTk5bKeUEk",
       bio: "Passionate about creating seamless user experiences with modern web technologies.",
       social: {
         github: "https://github.com/hiten-v",
         linkedin: "https://linkedin.com/in/hiten-v",
-        instagram: "https://instagram.com/hitenvaid"
+        email: "hitenvaid3837@gmail.com"
       }
     },
     {
       name: "Shreyansh Tripathi",
       role: "Full Stack Developer",
-      // avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?auto=format&fit=crop&q=80&w=100",
+      avatar: "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7",
       bio: "Design enthusiast focused on creating intuitive and beautiful interfaces.",
       social: {
-        github: "https://github.com/priya",
-        linkedin: "https://linkedin.com/in/priya",
-        instagram: "https://instagram.com/priya"
+        github: "https://github.com/shreyanshtripathi",
+        linkedin: "https://linkedin.com/in/shreyanshtripathi",
+        email: "https://instagram.com/priya"
       }
     },
-    {
-      name: "Himanshu",
-      role: "Full Stack Developer",
-      // avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=100",
-      bio: "Expert in scalable backend systems and database architecture.",
-      social: {
-        github: "https://github.com/rahul",
-        linkedin: "https://linkedin.com/in/rahul",
-        twitter: "https://twitter.com/rahul"
-      }
-    }
   ];
 
   const stats = [
@@ -245,7 +234,7 @@ const About = () => {
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-2 max-sm:grid-cols-1 gap-8">
             {developers.map((dev, index) => (
               <motion.div
                 key={index}
@@ -254,11 +243,11 @@ const About = () => {
                 transition={{ delay: index * 0.1, duration: 0.5 }}
                 className="bg-white rounded-xl border border-stone-200 p-6 text-center shadow-sm hover:shadow-md transition-shadow"
               >
-                {/* <img 
+                <img 
                   src={dev.avatar} 
                   alt={dev.name}
                   className="w-24 h-24 rounded-full mx-auto mb-4 object-cover border-4 border-[#702c2c]/10"
-                /> */}
+                />
                 <h3 className="text-xl font-bold mb-1">{dev.name}</h3>
                 <p className="text-[#702c2c] font-medium mb-3">{dev.role}</p>
                 <p className="text-stone-600 text-sm mb-6">{dev.bio}</p>

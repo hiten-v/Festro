@@ -154,7 +154,7 @@ const LoginSignupPopup = ({ isOpen, onClose, onLoginSuccess }) => {
 
   return (
     <AnimatePresence mode="wait">
-      <div className="fixed inset-0 z-50 transition ease-in duration-1000 flex items-center justify-center bg-white/10 backdrop-blur-sm">
+      <div className="fixed inset-0 z-50 transition ease-in duration-1000 flex items-center justify-center bg-white/1 backdrop-blur-sm ">
         {toast.show && (
         <div
           className={`fixed top-2 left-1/2 -translate-x-1/2 z-50

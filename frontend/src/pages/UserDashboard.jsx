@@ -949,8 +949,7 @@ const UserDashboard = () => {
                   </div>
                   
                   {event.hasReview ? (
-                    <div className="text-sm text-green-600 font-medium flex items-center gap-1">
-                      <FaStar className="text-yellow-500" />
+                    <div className="text-sm text-slate-800 font-medium flex items-center gap-1">
                       Rated
                     </div>
                   ) : (
